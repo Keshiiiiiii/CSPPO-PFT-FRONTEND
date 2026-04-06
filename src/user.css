@@ -1,0 +1,196 @@
+.user-root {
+  padding: 24px;
+  background: var(--off-white);
+  min-height: 100vh;
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+.user-panel {
+  max-width: 960px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px 22px;
+  box-shadow: var(--shadow-soft);
+  border: 1px solid rgba(148, 163, 184, 0.5);
+}
+
+.user-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.user-title {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--navy);
+}
+
+.user-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.user-btn-import {
+  padding: 9px 18px;
+  border-radius: 8px;
+  border: 1px solid var(--blue);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  background: rgba(37, 99, 235, 0.08);
+  color: var(--blue);
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+.user-btn-import:hover {
+  background: rgba(37, 99, 235, 0.15);
+}
+
+.user-btn-add {
+  padding: 9px 18px;
+  border-radius: 8px;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--blue);
+  color: #fff;
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+.user-btn-add:hover {
+  filter: brightness(1.1);
+}
+
+.user-action-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.user-btn-edit {
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--blue);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--blue);
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+.user-btn-edit:hover {
+  background: var(--blue);
+  color: #fff;
+}
+
+.user-btn-delete {
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--danger, #b00020);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger, #b00020);
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+.user-btn-delete:hover {
+  background: var(--danger, #b00020);
+  color: #fff;
+}
+
+.user-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 18px;
+  margin-bottom: 16px;
+}
+
+.user-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 150px;
+}
+
+.user-filter-group.user-search {
+  min-width: 220px;
+  flex: 1;
+}
+
+.user-filter-group label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+}
+
+.user-filter-group select,
+.user-filter-group input {
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.9);
+  font-size: 14px;
+  outline: none;
+}
+
+.user-filter-group select:focus,
+.user-filter-group input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+.user-filter-actions {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.user-filter-actions button {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--blue);
+  color: #fff;
+}
+
+.user-filter-actions button:last-child {
+  background: var(--navy-mid);
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.user-table thead {
+  background: var(--ice);
+}
+
+.user-table th,
+.user-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--ice);
+  text-align: left;
+}
+
+.user-table tbody tr:hover {
+  background: rgba(219, 234, 254, 0.5);
+}
+

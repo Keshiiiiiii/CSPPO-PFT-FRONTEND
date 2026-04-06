@@ -1,0 +1,79 @@
+ .create-account-panel {
+  background: var(--white);
+  border-radius: 16px;
+  box-shadow: var(--shadow-deep);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  padding: 24px;
+  width: 360px;
+  max-width: 90vw;
+}
+
+.create-account-panel h2 {
+  margin: 0 0 14px;
+  font-size: 20px;
+  color: var(--navy);
+  font-family: 'Rajdhani', sans-serif;
+}
+
+.create-account-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.create-account-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.create-account-group label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--navy-mid);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.create-account-input {
+  font-family: 'Source Sans 3', sans-serif;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(148, 163, 184, 0.7);
+  background: var(--off-white);
+  color: var(--navy);
+}
+
+.create-account-input:focus {
+  border-color: var(--blue);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.create-account-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.create-account-btn-primary,
+.create-account-btn-secondary {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.create-account-btn-primary {
+  background: linear-gradient(135deg, var(--blue), var(--blue-light));
+  color: var(--white);
+}
+
+.create-account-btn-secondary {
+  background: var(--off-white);
+  color: var(--navy);
+  border: 1px solid rgba(148, 163, 184, 0.7);
+}
