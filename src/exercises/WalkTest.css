@@ -1,0 +1,5 @@
+.walktest-header { display: flex; justify-content: space-between; align-items: center; }
+.walktest-form { margin-bottom: 14px; }
+.walktest-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.walktest-btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+.walktest-message { color: var(--navy); font-weight: 600; }

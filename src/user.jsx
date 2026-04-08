@@ -9,6 +9,8 @@ function User({
   onImportExcel,
   onOpenAddModal,
   onEditUser,
+  onEditWalkTest,
+  onDeleteWalkTest,
   search,
   setSearch,
   gender,
@@ -17,8 +19,6 @@ function User({
   setAgeMin,
   ageMax,
   setAgeMax,
-  status,
-  setStatus,
   goNoGo,
   setGoNoGo,
   onResetFilters,
@@ -28,6 +28,29 @@ function User({
   getOfficerName
 }) {
   const fileInputRef = useRef(null)
+
+  const getUserDisplayName = (u) => {
+    if (!u) return ''
+    const full = [u.first_name ?? u.firstName, u.last_name ?? u.lastName].filter(Boolean).join(' ').trim()
+    return String(
+      u.full_name ??
+        u.name ??
+        u.officer_name ??
+        u.username ??
+        u.user_name ??
+        full ??
+        ''
+    ).trim()
+  }
+
+  const normalizeId = (v) => String(v ?? '').trim().replace(/^USR-/i, '').replace(/^0+/, '')
+  const idsMatch = (a, b) => {
+    const sa = String(a ?? '').trim()
+    const sb = String(b ?? '').trim()
+    if (!sa || !sb) return false
+    if (sa === sb) return true
+    return normalizeId(sa) === normalizeId(sb)
+  }
 
   const handleImportClick = () => {
     fileInputRef.current?.click()
@@ -49,24 +72,27 @@ function User({
 
   const combinedRows = []
   const processedTestIds = new Set()
+  const hasLocationColumn = Boolean(users?.some((u) => u?.location != null))
 
   if (filteredUsers) {
     filteredUsers.forEach((u) => {
-      const userTests = adminWalkTests ? adminWalkTests.filter(t => 
-        t.officer_id === u.id || 
-        t.officer_id === u.officer_id || 
-        t.officer_id === u.officer_profile_id || 
-        t.officer_id === u.account_id || 
-        t.officer_id === u.user_id ||
-        String(t.officer_id) === String(u.id).replace('USR-','').replace(/^0+/,'')
-      ) : []
+      const userTests = adminWalkTests
+        ? adminWalkTests.filter(
+            (t) =>
+              idsMatch(t.officer_id, u.id) ||
+              idsMatch(t.officer_id, u.officer_id) ||
+              idsMatch(t.officer_id, u.officer_profile_id) ||
+              idsMatch(t.officer_id, u.account_id) ||
+              idsMatch(t.officer_id, u.user_id)
+          )
+        : []
 
       if (userTests.length === 0) {
         combinedRows.push({ type: 'user', u, test: null, isFirst: true })
       } else {
         userTests.forEach((t, idx) => {
           processedTestIds.add(t.id)
-          combinedRows.push({ type: 'mixed', u, test: t, isFirst: idx === 0 })
+          combinedRows.push({ type: 'mixed', u, test: t, isFirst: idx === 0, groupSize: userTests.length })
         })
       }
     })
@@ -81,9 +107,7 @@ function User({
         const matchGender = !gender || t.gender?.toLowerCase() === gender.toLowerCase()
         const matchAge = (!ageMin || t.age >= parseInt(ageMin, 10)) && (!ageMax || t.age <= parseInt(ageMax, 10))
         const matchGoNoGo = !goNoGo
-        const matchStatus = !status
-        
-        if (matchSearch && matchGender && matchAge && matchGoNoGo && matchStatus) {
+        if (matchSearch && matchGender && matchAge && matchGoNoGo) {
           combinedRows.push({ type: 'orphan', u: null, test: t, name: officerName, isFirst: true })
         }
       }
@@ -94,7 +118,7 @@ function User({
     <div className="user-root">
       <div className="user-panel">
         <div className="user-header-row">
-          <h2 className="user-title">User Management</h2>
+          <h2 className="user-title">Walk Test Records</h2>
           <div className="user-header-actions">
             <input
               ref={fileInputRef}
@@ -166,21 +190,6 @@ function User({
             />
           </div>
 
-          {setStatus && (
-            <div className="user-filter-group">
-              <label>Status</label>
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-              >
-                <option value="">All</option>
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
-                <option value="Pending">Pending</option>
-              </select>
-            </div>
-          )}
-
           <div className="user-filter-actions">
             {onResetFilters && (
               <button type="button" onClick={onResetFilters}>
@@ -208,44 +217,31 @@ function User({
               <th>Police GO / NO GO</th>
               <th>Gender</th>
               <th>Age</th>
-              {users?.[0]?.location != null && <th>Location</th>}
-              {users?.[0]?.status != null && <th>Status</th>}
+              {hasLocationColumn && <th>Location</th>}
               <th>Time</th>
               <th>Grade</th>
               <th>Test Date</th>
-              {(onEditUser || onDeleteUser) && <th>Actions</th>}
+              {(onEditWalkTest || onDeleteWalkTest) && <th>Actions</th>}
             </tr>
           </thead>
           <tbody>
             {combinedRows.map((row, idx) => {
-              const { type, u, test, name, isFirst } = row
+              const { type, u, test, name, isFirst, groupSize } = row
               if (type === 'user') {
                 return (
                   <tr key={`user-${u.id}`}>
                     <td>{u.id}</td>
-                    <td>{u.name}</td>
+                    <td>{getUserDisplayName(u) || '—'}</td>
                     <td>{u.policeGoNoGo ?? '—'}</td>
                     <td>{u.gender}</td>
                     <td>{u.age}</td>
-                    {u.location != null && <td>{u.location}</td>}
-                    {u.status != null && <td>{u.status}</td>}
+                    {hasLocationColumn && <td>{u.location ?? '—'}</td>}
                     <td>—</td>
                     <td>—</td>
                     <td>—</td>
-                    {(onEditUser || onDeleteUser) && (
+                    {(onEditWalkTest || onDeleteWalkTest) && (
                       <td>
-                        <div className="user-action-btns">
-                          {onEditUser && (
-                            <button type="button" className="user-btn-edit" onClick={() => onEditUser(u)}>
-                              Edit
-                            </button>
-                          )}
-                          {onDeleteUser && (
-                            <button type="button" className="user-btn-delete" onClick={() => onDeleteUser(u.id)}>
-                              Delete
-                            </button>
-                          )}
-                        </div>
+                        <span style={{ color: 'var(--muted)' }}>No walk test record</span>
                       </td>
                     )}
                   </tr>
@@ -253,32 +249,29 @@ function User({
               } else if (type === 'mixed') {
                 return (
                   <tr key={`mixed-${u.id}-${test.id}`}>
-                    <td>{isFirst ? u.id : ''}</td>
-                    <td>{isFirst ? u.name : ''}</td>
-                    <td>{isFirst ? (u.policeGoNoGo ?? '—') : ''}</td>
+                    <td>{u.id}</td>
+                    <td>{getUserDisplayName(u) || '—'}</td>
+                    <td>{u.policeGoNoGo ?? '—'}</td>
                     <td>{test.gender || u.gender}</td>
                     <td>{test.age || u.age}</td>
-                    {u.location != null && <td>{isFirst ? u.location : ''}</td>}
-                    {u.status != null && <td>{isFirst ? u.status : ''}</td>}
+                    {hasLocationColumn && <td>{u.location ?? '—'}</td>}
                     <td>{test.time_formatted || `${test.minutes}:${String(test.seconds).padStart(2, '0')}`}</td>
                     <td>{test.grade}</td>
                     <td>{test.test_date ? new Date(test.test_date).toLocaleDateString() : '—'}</td>
-                    {(onEditUser || onDeleteUser) && (
+                    {(onEditWalkTest || onDeleteWalkTest) && (
                       <td>
-                        {isFirst && (
-                          <div className="user-action-btns">
-                            {onEditUser && (
-                              <button type="button" className="user-btn-edit" onClick={() => onEditUser(u)}>
-                                Edit
-                              </button>
-                            )}
-                            {onDeleteUser && (
-                              <button type="button" className="user-btn-delete" onClick={() => onDeleteUser(u.id)}>
-                                Delete
-                              </button>
-                            )}
-                          </div>
-                        )}
+                        <div className="user-action-btns" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                          {onEditWalkTest && (
+                            <button type="button" className="user-btn-edit" onClick={() => onEditWalkTest(test)}>
+                              Edit Walk Test
+                            </button>
+                          )}
+                          {onDeleteWalkTest && (
+                            <button type="button" className="user-btn-delete" onClick={() => onDeleteWalkTest(test.id)}>
+                              Delete Walk Test
+                            </button>
+                          )}
+                        </div>
                       </td>
                     )}
                   </tr>
@@ -286,17 +279,33 @@ function User({
               } else if (type === 'orphan') {
                 return (
                   <tr key={`orphan-${test.id}`}>
-                    <td>{test.officer_id}</td>
-                    <td>{name}</td>
+                    <td>{test.officer_id || test.account_id || test.user_id || '—'}</td>
+                    <td className="user-name">
+                      {name || `Officer ${test.officer_id || test.id}`}
+                    </td>
                     <td>—</td>
                     <td>{test.gender}</td>
                     <td>{test.age}</td>
-                    {users?.[0]?.location != null && <td>—</td>}
-                    {users?.[0]?.status != null && <td>—</td>}
+                    {hasLocationColumn && <td>—</td>}
                     <td>{test.time_formatted || `${test.minutes}:${String(test.seconds).padStart(2, '0')}`}</td>
                     <td>{test.grade}</td>
                     <td>{test.test_date ? new Date(test.test_date).toLocaleDateString() : '—'}</td>
-                    {(onEditUser || onDeleteUser) && <td></td>}
+                    {(onEditWalkTest || onDeleteWalkTest) && (
+                      <td>
+                        <div className="user-action-btns" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                          {onEditWalkTest && (
+                            <button type="button" className="user-btn-edit" onClick={() => onEditWalkTest(test)}>
+                              Edit Walk Test
+                            </button>
+                          )}
+                          {onDeleteWalkTest && (
+                            <button type="button" className="user-btn-delete" onClick={() => onDeleteWalkTest(test.id)}>
+                              Delete Walk Test
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 )
               }

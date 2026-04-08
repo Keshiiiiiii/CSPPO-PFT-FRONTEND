@@ -1,0 +1,5 @@
+.pushup-header { display: flex; justify-content: space-between; align-items: center; }
+.pushup-form { margin-bottom: 14px; }
+.pushup-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.pushup-btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+.pushup-message { color: var(--navy); font-weight: 600; }

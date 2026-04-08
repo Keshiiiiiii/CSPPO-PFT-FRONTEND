@@ -1,0 +1,27 @@
+.officer-exercises__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.officer-exercises__form {
+  margin-bottom: 14px;
+}
+
+.officer-exercises__actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.officer-exercises__btn-secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.officer-exercises__message {
+  color: var(--navy);
+  font-weight: 600;
+}

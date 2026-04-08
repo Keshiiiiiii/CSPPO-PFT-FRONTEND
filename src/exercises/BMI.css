@@ -1,0 +1,5 @@
+.bmi-header { display: flex; justify-content: space-between; align-items: center; }
+.bmi-form { margin-bottom: 14px; }
+.bmi-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.bmi-btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+.bmi-message { color: var(--navy); font-weight: 600; }

@@ -1,0 +1,5 @@
+.sprint-header { display: flex; justify-content: space-between; align-items: center; }
+.sprint-form { margin-bottom: 14px; }
+.sprint-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.sprint-btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+.sprint-message { color: var(--navy); font-weight: 600; }

@@ -49,7 +49,8 @@ const parseResponse = async (response) => {
   }
 
   if (!response.ok) {
-    const backendMessage = payload?.message || payload?.error || text || response.statusText
+    const detailMsg = typeof payload?.detail === 'object' ? JSON.stringify(payload.detail) : payload?.detail;
+    const backendMessage = payload?.message || payload?.error || detailMsg || text || response.statusText
     throw new Error(backendMessage || `Server error: ${response.status}`)
   }
 
@@ -229,19 +230,13 @@ export const adminLogin = async (loginData) => {
   }
 }
 
-// Get Officer Info
+// Get Officer Info (account fields such as email — GET /auth/officer/info)
 export const getOfficerInfo = async () => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/auth/officer/info`, {
-      method: 'GET',
-      headers: getAuthHeaders(),
-    })
-    if (!response.ok) throw new Error('Failed to fetch officer info')
-    return await response.json()
-  } catch (error) {
-    console.error('Error fetching officer info:', error)
-    throw error
-  }
+  const response = await fetch(`${API_BASE_URL}/auth/officer/info`, {
+    method: 'GET',
+    headers: getAuthHeaders(),
+  })
+  return await parseResponse(response)
 }
 
 // Update Officer Account
@@ -458,6 +453,16 @@ export const officerGetProfile = async () => {
   return await parseResponse(response)
 }
 
+/** Update the signed-in officer's profile (same resource family as GET /auth/officer/profile). */
+export const officerUpdateProfile = async (profileData) => {
+  const response = await fetch(buildOfficerUrl('/auth/officer/update_profile'), {
+    method: 'PUT',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(profileData),
+  })
+  return await parseResponse(response)
+}
+
 export const officerDeleteProfile = async () => {
   const response = await fetch(buildOfficerUrl('/auth/officer/delete_profile'), {
     method: 'DELETE',
@@ -636,8 +641,9 @@ export const adminDeleteOfficerBmi = async (id) => {
 }
 
 export const adminGetAllOfficerProfiles = async () => {
-  // Some backend versions use either route; try both before failing.
+  // Try the current Nest route first, then older variants.
   const routes = [
+    '/auth/admin/officer/profile',
     '/auth/admin/getallofficer_profile',
     '/auth/admin/officer/getallofficer_profile',
   ]
@@ -649,7 +655,12 @@ export const adminGetAllOfficerProfiles = async () => {
         headers: getAuthHeaders(),
       })
       if (response.ok) {
-        return await parseResponse(response)
+        const data = await parseResponse(response)
+        if (Array.isArray(data)) return data
+        if (Array.isArray(data?.data)) return data.data
+        if (Array.isArray(data?.results)) return data.results
+        if (Array.isArray(data?.items)) return data.items
+        return []
       }
       if (response.status !== 404) {
         return await parseResponse(response)
@@ -666,7 +677,7 @@ export const adminGetAllOfficerProfiles = async () => {
 }
 
 export const adminGetOfficerAccount = async (id) => {
-  const response = await fetch(buildAdminUrl(`/auth/admin/officer_account/${id}`), {
+  const response = await fetch(buildAdminUrl(`/auth/admin/officer/account/${id}`), {
     method: 'GET',
     headers: getAuthHeaders(),
   })
@@ -674,7 +685,7 @@ export const adminGetOfficerAccount = async (id) => {
 }
 
 export const adminGetOfficerAccounts = async () => {
-  const response = await fetch(buildAdminUrl('/auth/admin/officer_accounts'), {
+  const response = await fetch(buildAdminUrl('/auth/admin/officer/accounts'), {
     method: 'GET',
     headers: getAuthHeaders(),
   })
@@ -682,7 +693,7 @@ export const adminGetOfficerAccounts = async () => {
 }
 
 export const adminUpdateInfo = async (data) => {
-  const response = await fetch(buildAdminUrl('/auth/admin/update_info'), {
+  const response = await fetch(buildAdminUrl('/auth/admin/update/info'), {
     method: 'PUT',
     headers: getAuthHeaders(),
     body: JSON.stringify(data),
@@ -691,7 +702,7 @@ export const adminUpdateInfo = async (data) => {
 }
 
 export const adminUpdateStatus = async (data) => {
-  const response = await fetch(buildAdminUrl('/auth/admin/update_status'), {
+  const response = await fetch(buildAdminUrl('/auth/admin/update/status'), {
     method: 'PUT',
     headers: getAuthHeaders(),
     body: JSON.stringify(data),
