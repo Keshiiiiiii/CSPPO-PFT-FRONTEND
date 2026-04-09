@@ -131,16 +131,105 @@ function App() {
   const toArray = (data) => {
     if (Array.isArray(data)) return data
     if (Array.isArray(data?.data)) return data.data
+    if (Array.isArray(data?.data?.items)) return data.data.items
+    if (Array.isArray(data?.data?.records)) return data.data.records
     if (Array.isArray(data?.results)) return data.results
     if (Array.isArray(data?.items)) return data.items
+    if (Array.isArray(data?.records)) return data.records
+    if (Array.isArray(data?.pushup_records)) return data.pushup_records
+    if (Array.isArray(data?.situp_records)) return data.situp_records
+    if (Array.isArray(data?.bmi_records)) return data.bmi_records
+    if (Array.isArray(data?.sprint_records)) return data.sprint_records
     // Some endpoints return a single record object
     if (data && typeof data === 'object') {
       const looksLikeRecord =
         data.id != null ||
         data.bmi != null ||
         data.height_meter != null ||
-        data.weight_kg != null
+        data.weight_kg != null ||
+        data.reps != null ||
+        data.count != null ||
+        data.pushup_count != null ||
+        data.situp_count != null ||
+        data.minutes != null ||
+        data.seconds != null
       if (looksLikeRecord) return [data]
+    }
+    return []
+  }
+
+  const isPushupLikeRecord = (r) => {
+    if (!r || typeof r !== 'object') return false
+    return (
+      r.id != null ||
+      r.reps != null ||
+      r.count != null ||
+      r.pushup_count != null ||
+      r.push_up_count != null ||
+      r.total_reps != null ||
+      r.grade != null ||
+      r.test_date != null
+    )
+  }
+
+  const normalizePushupRecords = (data) => {
+    const candidates = [
+      data,
+      data?.data,
+      data?.data?.data,
+      data?.results,
+      data?.items,
+      data?.records,
+      data?.pushup_records,
+      data?.push_up_records,
+      data?.officer_pushup_records,
+      data?.officer_pushup_record,
+      data?.pushup_record,
+      data?.push_up_record,
+    ]
+
+    for (const c of candidates) {
+      if (Array.isArray(c)) return c.filter((x) => x && typeof x === 'object')
+    }
+    for (const c of candidates) {
+      if (isPushupLikeRecord(c)) return [c]
+      if (c && typeof c === 'object' && isPushupLikeRecord(c.data)) return [c.data]
+    }
+    return []
+  }
+
+  const isSprintLikeRecord = (r) => {
+    if (!r || typeof r !== 'object') return false
+    return (
+      r.id != null ||
+      r.minutes != null ||
+      r.seconds != null ||
+      r.time_formatted != null ||
+      r.grade != null ||
+      r.test_date != null
+    )
+  }
+
+  const normalizeSprintRecords = (data) => {
+    const candidates = [
+      data,
+      data?.data,
+      data?.data?.data,
+      data?.results,
+      data?.items,
+      data?.records,
+      data?.sprint_records,
+      data?.sprint_record,
+      data?.officer_sprint_records,
+      data?.officer_sprint_record,
+    ]
+
+    for (const c of candidates) {
+      if (Array.isArray(c)) return c.filter((x) => x && typeof x === 'object')
+    }
+    for (const c of candidates) {
+      if (isSprintLikeRecord(c)) return [c]
+      if (c && typeof c === 'object' && isSprintLikeRecord(c.data)) return [c.data]
     }
     return []
   }
@@ -177,8 +266,8 @@ function App() {
   const [sprintMessage, setSprintMessage] = useState('')
   const [bmiForm, setBmiForm] = useState({ height_meter: '', weight_kg: '', month_taken: '' })
   const [situpForm, setSitupForm] = useState({ reps: '', age: '', gender: 'male', test_date: '' })
-  const [pushupForm, setPushupForm] = useState({ count: '', age: '', gender: 'male', test_date: '' })
-  const [sprintForm, setSprintForm] = useState({ minutes: '', seconds: '0', age: '', gender: 'male', test_date: '' })
+  const [pushupForm, setPushupForm] = useState({ reps: '', age: '', gender: 'male', test_date: '' })
+  const [sprintForm, setSprintForm] = useState({ minutes: '', seconds: '0', age: '', gender: 'male' })
   const [addForm, setAddForm] = useState({
     firstName: '',
     lastName: '',
@@ -342,8 +431,8 @@ function App() {
         setOfficerWalkRecords(walkRecords)
         setOfficerBmiRecords(toArray(bmiRecords))
         setOfficerSitupRecords(toArray(situpRecords))
-        setOfficerPushupRecords(toArray(pushupRecords))
-        setOfficerSprintRecords(toArray(sprintRecords))
+        setOfficerPushupRecords(normalizePushupRecords(pushupRecords))
+        setOfficerSprintRecords(normalizeSprintRecords(sprintRecords))
         setAccounts(profile ? [profile] : [])
       }
     } catch (error) {
@@ -744,6 +833,44 @@ function App() {
     })()
   }, [isAuthenticated, isAdmin, activePage, officerDashboardTab])
 
+  useEffect(() => {
+    if (!isAuthenticated || isAdmin || activePage !== 'dashboard') return
+    if (officerDashboardTab !== 'pushup') return
+    ;(async () => {
+      setPushupMessage('')
+      try {
+        const fresh = await officerGetPushupRecords()
+        setOfficerPushupRecords(normalizePushupRecords(fresh))
+      } catch (error) {
+        const msg = String(error?.message || '')
+        if (msg.toLowerCase().includes('profile not found')) {
+          setPushupMessage('Cannot load push-up records: Officer profile not found. Please complete your Officer Profile first.')
+        } else {
+          setPushupMessage(msg || 'Failed to load push-up records.')
+        }
+      }
+    })()
+  }, [isAuthenticated, isAdmin, activePage, officerDashboardTab])
+
+  useEffect(() => {
+    if (!isAuthenticated || isAdmin || activePage !== 'dashboard') return
+    if (officerDashboardTab !== 'sprint') return
+    ;(async () => {
+      setSprintMessage('')
+      try {
+        const fresh = await officerGetSprintRecords()
+        setOfficerSprintRecords(normalizeSprintRecords(fresh).filter(isSprintLikeRecord))
+      } catch (error) {
+        const msg = String(error?.message || '')
+        if (msg.toLowerCase().includes('profile not found')) {
+          setSprintMessage('Cannot load sprint records: Officer profile not found. Please complete your Officer Profile first.')
+        } else {
+          setSprintMessage(msg || 'Failed to load sprint records.')
+        }
+      }
+    })()
+  }, [isAuthenticated, isAdmin, activePage, officerDashboardTab])
+
   const handleSubmitSitup = async () => {
     const reps = parseInt(situpForm.reps, 10)
     const age = parseInt(situpForm.age, 10)
@@ -774,21 +901,58 @@ function App() {
   }
 
   const handleSubmitPushup = async () => {
+    const reps = parseInt(pushupForm.reps, 10)
+    const age = parseInt(pushupForm.age, 10)
+    const testDate = String(pushupForm.test_date || '').trim()
+    if (Number.isNaN(reps) || reps < 0) {
+      setPushupMessage('Please enter valid reps.')
+      return
+    }
+    if (Number.isNaN(age) || age < 0) {
+      setPushupMessage('Please enter valid age.')
+      return
+    }
+    if (!testDate) {
+      setPushupMessage('Please select test month/date.')
+      return
+    }
     try {
       setPushupMessage('Saving push-up record...')
-      await officerCreatePushupRecord({
-        count: parseInt(pushupForm.count, 10) || 0,
-        age: parseInt(pushupForm.age, 10) || 0,
+      const created = await officerCreatePushupRecord({
+        reps,
+        age,
         gender: pushupForm.gender,
-        test_date: pushupForm.test_date || undefined,
+        test_date: testDate,
       })
+      if (created && typeof created === 'object' && !Array.isArray(created) && isPushupLikeRecord(created)) {
+        setOfficerPushupRecords((prev) => {
+          const next = [created, ...prev]
+          const seen = new Set()
+          return next.filter((r, idx) => {
+            const key = r?.id ?? `tmp-${idx}`
+            if (seen.has(key)) return false
+            seen.add(key)
+            return true
+          })
+        })
+      }
       const fresh = await officerGetPushupRecords().catch(() => [])
-      setOfficerPushupRecords(toArray(fresh))
+      const normalized = normalizePushupRecords(fresh)
+      if (normalized.length > 0) {
+        setOfficerPushupRecords(normalized)
+      } else {
+        setOfficerPushupRecords((prev) => prev.filter((x) => x && typeof x === 'object'))
+      }
       setPushupMessage('Push-up record created successfully.')
       setIsAddingPushup(false)
-      setPushupForm({ count: '', age: '', gender: 'male', test_date: '' })
+      setPushupForm({ reps: '', age: '', gender: 'male', test_date: '' })
     } catch (error) {
-      setPushupMessage(error.message || 'Failed to create push-up record.')
+      const msg = String(error?.message || '')
+      if (msg.toLowerCase().includes('profile not found')) {
+        setPushupMessage('Cannot create push-up record: Officer profile not found. Please complete your Officer Profile first.')
+      } else {
+        setPushupMessage(msg || 'Failed to create push-up record.')
+      }
     }
   }
 
@@ -800,13 +964,12 @@ function App() {
         seconds: parseInt(sprintForm.seconds, 10) || 0,
         age: parseInt(sprintForm.age, 10) || 0,
         gender: sprintForm.gender,
-        test_date: sprintForm.test_date || undefined,
       })
       const fresh = await officerGetSprintRecords().catch(() => [])
-      setOfficerSprintRecords(toArray(fresh))
+      setOfficerSprintRecords(normalizeSprintRecords(fresh).filter(isSprintLikeRecord))
       setSprintMessage('Sprint record created successfully.')
       setIsAddingSprint(false)
-      setSprintForm({ minutes: '', seconds: '0', age: '', gender: 'male', test_date: '' })
+      setSprintForm({ minutes: '', seconds: '0', age: '', gender: 'male' })
     } catch (error) {
       setSprintMessage(error.message || 'Failed to create sprint record.')
     }
@@ -1730,7 +1893,7 @@ function App() {
                       <th>BMI</th>
                       <th>Category</th>
                       <th>Month Taken</th>
-                      <th>Actions</th>
+                      <th style={{ minWidth: 220 }}>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1758,8 +1921,17 @@ function App() {
                         <td>{r.bmi ?? r.bmi_value ?? '—'}</td>
                         <td>{r.category ?? r.status ?? '—'}</td>
                         <td>{r.month_taken ? new Date(r.month_taken).toLocaleDateString() : '—'}</td>
-                        <td>
-                          <div className="user-action-btns" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        <td style={{ minWidth: 220 }}>
+                          <div
+                            className="user-action-btns"
+                            style={{
+                              display: 'flex',
+                              gap: '8px',
+                              flexWrap: 'nowrap',
+                              alignItems: 'center',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
                             <button type="button" className="user-btn-edit" onClick={() => openBmiModal(r)}>
                               Edit BMI
                             </button>

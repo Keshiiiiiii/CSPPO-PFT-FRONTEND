@@ -21,7 +21,6 @@ function Sprint300m({
           <div className="form-group"><label>Seconds</label><input type="number" min="0" max="59" className="form-input" value={sprintForm.seconds} onChange={(e) => setSprintForm((f) => ({ ...f, seconds: e.target.value }))} /></div>
           <div className="form-group"><label>Age</label><input type="number" min="0" className="form-input" value={sprintForm.age} onChange={(e) => setSprintForm((f) => ({ ...f, age: e.target.value }))} /></div>
           <div className="form-group"><label>Gender</label><select className="form-select" value={sprintForm.gender} onChange={(e) => setSprintForm((f) => ({ ...f, gender: e.target.value }))}><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select></div>
-          <div className="form-group"><label>Test Date</label><input type="date" className="form-input" value={sprintForm.test_date} onChange={(e) => setSprintForm((f) => ({ ...f, test_date: e.target.value }))} /></div>
           <div className="form-group full sprint-actions"><button type="button" className="btn btn-primary" onClick={handleSubmitSprint}>Save Sprint</button><button type="button" className="btn sprint-btn-secondary" onClick={() => setIsAddingSprint(false)}>Cancel</button>{sprintMessage && <span className="sprint-message">{sprintMessage}</span>}</div>
         </div>
       )}

@@ -17,10 +17,10 @@ function PushUp({
       </div>
       {isAddingPushup && (
         <div className="form-grid pushup-form">
-          <div className="form-group"><label>Count</label><input type="number" min="0" className="form-input" value={pushupForm.count} onChange={(e) => setPushupForm((f) => ({ ...f, count: e.target.value }))} /></div>
+          <div className="form-group"><label>Reps</label><input type="number" min="0" className="form-input" value={pushupForm.reps} onChange={(e) => setPushupForm((f) => ({ ...f, reps: e.target.value }))} /></div>
           <div className="form-group"><label>Age</label><input type="number" min="0" className="form-input" value={pushupForm.age} onChange={(e) => setPushupForm((f) => ({ ...f, age: e.target.value }))} /></div>
           <div className="form-group"><label>Gender</label><select className="form-select" value={pushupForm.gender} onChange={(e) => setPushupForm((f) => ({ ...f, gender: e.target.value }))}><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select></div>
-          <div className="form-group"><label>Test Date</label><input type="date" className="form-input" value={pushupForm.test_date} onChange={(e) => setPushupForm((f) => ({ ...f, test_date: e.target.value }))} /></div>
+          <div className="form-group"><label>Test Month</label><input type="month" className="form-input" value={pushupForm.test_date} onChange={(e) => setPushupForm((f) => ({ ...f, test_date: e.target.value }))} /></div>
           <div className="form-group full pushup-actions"><button type="button" className="btn btn-primary" onClick={handleSubmitPushup}>Save Push-up</button><button type="button" className="btn pushup-btn-secondary" onClick={() => setIsAddingPushup(false)}>Cancel</button>{pushupMessage && <span className="pushup-message">{pushupMessage}</span>}</div>
         </div>
       )}
