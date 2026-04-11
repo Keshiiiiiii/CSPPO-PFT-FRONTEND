@@ -61,9 +61,41 @@ const formatSexDisplay = (v) => {
   return String(v)
 }
 
+/* ── Inline SVG Icon Components ─────────────────────────── */
+const IconDashboard = () => (<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>)
+const IconProfile = () => (<svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>)
+const IconUsers = () => (<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>)
+const IconSettings = () => (<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>)
+const IconRefresh = () => (<svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>)
+const IconMenu = () => (<svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>)
+const IconChevronLeft = () => (<svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>)
+const IconWalk = () => (<svg viewBox="0 0 24 24"><circle cx="14" cy="5" r="2"/><path d="M18 22l-3-3-1.5 3L9 16l-4 4"/><path d="M10 16l2-5 3 1"/></svg>)
+const IconScale = () => (<svg viewBox="0 0 24 24"><path d="M16 16v3a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4"/><line x1="2" y1="12" x2="20" y2="12"/><path d="M12 2v20"/></svg>)
+const IconActivity = () => (<svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>)
+const IconTarget = () => (<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>)
+const IconZap = () => (<svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>)
+const IconShield = () => (<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>)
+const IconLogOut = () => (<svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>)
+const IconEdit = () => (<svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>)
+const IconMonitor = () => (<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>)
+const IconAlertTriangle = () => (<svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>)
+const IconClipboard = () => (<svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>)
+const IconTrendingUp = () => (<svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>)
+const IconAward = () => (<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>)
+const IconHeart = () => (<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>)
+
+const getGreeting = () => {
+  const h = new Date().getHours()
+  if (h < 12) return 'Good morning'
+  if (h < 18) return 'Good afternoon'
+  return 'Good evening'
+}
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [userRole, setUserRole] = useState('admin') // 'admin' | 'user'
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [userName, setUserName] = useState('Ofc. J. Rivera')
   const [accounts, setAccounts] = useState([])
   const [adminWalkTests, setAdminWalkTests] = useState([])
@@ -1256,16 +1288,19 @@ function App() {
   return (
     <>
       {/* SIDEBAR */}
-      <aside className="sidebar">
+      <aside className={`sidebar${sidebarCollapsed ? ' collapsed' : ''}${mobileMenuOpen ? ' mobile-open' : ''}`}>
+        <button className="sidebar-toggle" onClick={() => setSidebarCollapsed(c => !c)} title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}>
+          <IconChevronLeft />
+        </button>
         <div className="sidebar-brand">
           <div className="badge-icon">
             <img
               src="https://static.wikia.nocookie.net/logopedia/images/3/31/Philippine_National_Police.png/revision/latest?cb=20200626051209"
               alt="Philippine National Police"
-              style={{ width: '100%', height: '100%', objectFit: 'cover ', borderRadius: '100%' }}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '100%' }}
             />
           </div>
-          <div className="brand-title">Human Resource and Doctorine Management Dept.</div>
+          <div className="brand-title">Human Resource and Doctrine Development Dept.</div>
           <div className="brand-sub">Command Center</div>
         </div>
         <nav className="nav-section">
@@ -1276,9 +1311,11 @@ function App() {
             onClick={(e) => {
               e.preventDefault()
               setActivePage('dashboard')
+              setMobileMenuOpen(false)
             }}
           >
-            <span className="icon">📊</span> Dashboard
+            <span className="nav-icon"><IconDashboard /></span>
+            <span className="nav-text">Dashboard</span>
           </a>
           <a
             className={`nav-item ${activePage === 'officerProfile' ? 'active' : ''}`}
@@ -1286,9 +1323,11 @@ function App() {
             onClick={(e) => {
               e.preventDefault()
               setActivePage('officerProfile')
+              setMobileMenuOpen(false)
             }}
           >
-            <span className="icon">🪪</span> Officer Profile
+            <span className="nav-icon"><IconProfile /></span>
+            <span className="nav-text">Officer Profile</span>
           </a>
           {isAdmin && (
             <>
@@ -1299,9 +1338,12 @@ function App() {
                 onClick={(e) => {
                   e.preventDefault()
                   setActivePage('user')
+                  setMobileMenuOpen(false)
                 }}
               >
-                <span className="icon">👥</span> User Management <span className="status-dot" />
+                <span className="nav-icon"><IconUsers /></span>
+                <span className="nav-text">User Management</span>
+                <span className="status-dot" />
               </a>
             </>
           )}
@@ -1311,9 +1353,11 @@ function App() {
             onClick={(e) => {
               e.preventDefault()
               setActivePage('settings')
+              setMobileMenuOpen(false)
             }}
           >
-            <span className="icon">⚙️</span> Settings
+            <span className="nav-icon"><IconSettings /></span>
+            <span className="nav-text">Settings</span>
           </a>
         </nav>
         <div className="sidebar-footer">
@@ -1321,17 +1365,22 @@ function App() {
             <div className="officer-avatar">{getInitials(userName || 'Guest')}</div>
             <div>
               <div className="officer-name">{userName ? `Ofc. ${userName}` : 'Ofc. Guest'}</div>
-              <div className="officer-rank">{isAdmin ? 'Admin' : 'User'}</div>
+              <div className="officer-rank">{isAdmin ? 'Administrator' : 'Officer'}</div>
             </div>
           </div>
         </div>
       </aside>
+      {/* Mobile overlay */}
+      {mobileMenuOpen && <div className="sidebar-overlay" onClick={() => setMobileMenuOpen(false)} />}
 
       {/* MAIN */}
       <main className="main">
         {/* TOPBAR */}
         <div className="topbar">
           <div className="topbar-left">
+            <button className="mobile-menu-btn" type="button" onClick={() => setMobileMenuOpen(o => !o)} title="Toggle menu">
+              <IconMenu />
+            </button>
             <div>
               <div className="page-crumb">
                 {activePage === 'dashboard' && 'Main / Dashboard'}
@@ -1346,6 +1395,7 @@ function App() {
                 {activePage === 'settings' && 'Settings'}
               </div>
             </div>
+            <span className="topbar-greeting">{getGreeting()}, {userName || 'Officer'}</span>
           </div>
           <div className="topbar-right">
             <button
@@ -1356,7 +1406,7 @@ function App() {
                 refreshProfilePage()
               }}
             >
-              ↻
+              <IconRefresh />
             </button>
           </div>
         </div>
@@ -1366,79 +1416,172 @@ function App() {
           {activePage === 'dashboard' && (
             <div className="dashboard-go-nogo user-root">
               {!isAdmin && (
-                <OfficerExercises
-                  officerDashboardTab={officerDashboardTab}
-                  setOfficerDashboardTab={setOfficerDashboardTab}
-                  isAddingWalkTest={isAddingWalkTest}
-                  setIsAddingWalkTest={setIsAddingWalkTest}
-                  walkTestForm={walkTestForm}
-                  setWalkTestForm={setWalkTestForm}
-                  handleSubmitWalkTest={handleSubmitWalkTest}
-                  walkTestMessage={walkTestMessage}
-                  officerWalkRecords={officerWalkRecords}
-                  isAddingBmi={isAddingBmi}
-                  setIsAddingBmi={setIsAddingBmi}
-                  bmiForm={bmiForm}
-                  setBmiForm={setBmiForm}
-                  handleSubmitBmi={handleSubmitBmi}
-                  bmiMessage={bmiMessage}
-                  officerBmiRecords={officerBmiRecords}
-                  isAddingSitup={isAddingSitup}
-                  setIsAddingSitup={setIsAddingSitup}
-                  situpForm={situpForm}
-                  setSitupForm={setSitupForm}
-                  handleSubmitSitup={handleSubmitSitup}
-                  situpMessage={situpMessage}
-                  officerSitupRecords={officerSitupRecords}
-                  isAddingPushup={isAddingPushup}
-                  setIsAddingPushup={setIsAddingPushup}
-                  pushupForm={pushupForm}
-                  setPushupForm={setPushupForm}
-                  handleSubmitPushup={handleSubmitPushup}
-                  pushupMessage={pushupMessage}
-                  officerPushupRecords={officerPushupRecords}
-                  isAddingSprint={isAddingSprint}
-                  setIsAddingSprint={setIsAddingSprint}
-                  sprintForm={sprintForm}
-                  setSprintForm={setSprintForm}
-                  handleSubmitSprint={handleSubmitSprint}
-                  sprintMessage={sprintMessage}
-                  officerSprintRecords={officerSprintRecords}
-                />
+                <>
+                  {/* Officer Summary Stat Cards */}
+                  <div className="stats-row">
+                    <div className="stat-card">
+                      <div className="stat-card-header">
+                        <div>
+                          <div className="stat-label">Total Tests</div>
+                          <div className="stat-value">{officerWalkRecords.length + officerBmiRecords.length + officerSitupRecords.length + officerPushupRecords.length + officerSprintRecords.length}</div>
+                        </div>
+                        <div className="stat-icon stat-icon--blue"><IconClipboard /></div>
+                      </div>
+                      <div className="stat-change"><IconTrendingUp /> All exercise records</div>
+                    </div>
+                    <div className="stat-card stat-card--emerald">
+                      <div className="stat-card-header">
+                        <div>
+                          <div className="stat-label">Walk Tests</div>
+                          <div className="stat-value">{officerWalkRecords.length}</div>
+                        </div>
+                        <div className="stat-icon stat-icon--emerald"><IconWalk /></div>
+                      </div>
+                      <div className="stat-change">Walk test records</div>
+                    </div>
+                    <div className="stat-card stat-card--amber">
+                      <div className="stat-card-header">
+                        <div>
+                          <div className="stat-label">BMI Records</div>
+                          <div className="stat-value">{officerBmiRecords.length}</div>
+                        </div>
+                        <div className="stat-icon stat-icon--amber"><IconScale /></div>
+                      </div>
+                      <div className="stat-change">Body mass index</div>
+                    </div>
+                    <div className="stat-card stat-card--violet">
+                      <div className="stat-card-header">
+                        <div>
+                          <div className="stat-label">Fitness Score</div>
+                          <div className="stat-value">{officerPushupRecords.length + officerSitupRecords.length + officerSprintRecords.length}</div>
+                        </div>
+                        <div className="stat-icon stat-icon--violet"><IconActivity /></div>
+                      </div>
+                      <div className="stat-change">Combined exercises</div>
+                    </div>
+                  </div>
+
+                  <OfficerExercises
+                    officerDashboardTab={officerDashboardTab}
+                    setOfficerDashboardTab={setOfficerDashboardTab}
+                    isAddingWalkTest={isAddingWalkTest}
+                    setIsAddingWalkTest={setIsAddingWalkTest}
+                    walkTestForm={walkTestForm}
+                    setWalkTestForm={setWalkTestForm}
+                    handleSubmitWalkTest={handleSubmitWalkTest}
+                    walkTestMessage={walkTestMessage}
+                    officerWalkRecords={officerWalkRecords}
+                    isAddingBmi={isAddingBmi}
+                    setIsAddingBmi={setIsAddingBmi}
+                    bmiForm={bmiForm}
+                    setBmiForm={setBmiForm}
+                    handleSubmitBmi={handleSubmitBmi}
+                    bmiMessage={bmiMessage}
+                    officerBmiRecords={officerBmiRecords}
+                    isAddingSitup={isAddingSitup}
+                    setIsAddingSitup={setIsAddingSitup}
+                    situpForm={situpForm}
+                    setSitupForm={setSitupForm}
+                    handleSubmitSitup={handleSubmitSitup}
+                    situpMessage={situpMessage}
+                    officerSitupRecords={officerSitupRecords}
+                    isAddingPushup={isAddingPushup}
+                    setIsAddingPushup={setIsAddingPushup}
+                    pushupForm={pushupForm}
+                    setPushupForm={setPushupForm}
+                    handleSubmitPushup={handleSubmitPushup}
+                    pushupMessage={pushupMessage}
+                    officerPushupRecords={officerPushupRecords}
+                    isAddingSprint={isAddingSprint}
+                    setIsAddingSprint={setIsAddingSprint}
+                    sprintForm={sprintForm}
+                    setSprintForm={setSprintForm}
+                    handleSubmitSprint={handleSubmitSprint}
+                    sprintMessage={sprintMessage}
+                    officerSprintRecords={officerSprintRecords}
+                  />
+                </>
               )}
 
               {isAdmin && (
-                <div className="user-panel" style={{ marginTop: 24 }}>
-                  <div className="user-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h2 className="user-title">Admin Dashboard Records</h2>
-                    <div className="user-filter-group user-search" style={{ margin: 0, minWidth: 250 }}>
-                      <input
-                        type="text"
-                        value={dashboardSearch}
-                        onChange={(e) => setDashboardSearch(e.target.value)}
-                        placeholder="Search officer name..."
-                        style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 6 }}
-                      />
+                <>
+                {/* Admin Summary Stat Cards */}
+                <div className="stats-row">
+                  <div className="stat-card">
+                    <div className="stat-card-header">
+                      <div>
+                        <div className="stat-label">Total Officers</div>
+                        <div className="stat-value">{users.length}</div>
+                      </div>
+                      <div className="stat-icon stat-icon--blue"><IconUsers /></div>
+                    </div>
+                    <div className="stat-change"><IconTrendingUp /> Registered profiles</div>
+                  </div>
+                  <div className="stat-card stat-card--emerald">
+                    <div className="stat-card-header">
+                      <div>
+                        <div className="stat-label">Walk Tests</div>
+                        <div className="stat-value">{adminWalkTests?.length || 0}</div>
+                      </div>
+                      <div className="stat-icon stat-icon--emerald"><IconWalk /></div>
+                    </div>
+                    <div className="stat-change">Total walk test records</div>
+                  </div>
+                  <div className="stat-card stat-card--amber">
+                    <div className="stat-card-header">
+                      <div>
+                        <div className="stat-label">BMI Records</div>
+                        <div className="stat-value">{adminBmiRecords.length}</div>
+                      </div>
+                      <div className="stat-icon stat-icon--amber"><IconScale /></div>
+                    </div>
+                    <div className="stat-change">Body mass index tests</div>
+                  </div>
+                  <div className="stat-card stat-card--violet">
+                    <div className="stat-card-header">
+                      <div>
+                        <div className="stat-label">All Exercises</div>
+                        <div className="stat-value">{adminSitupRecords.length + adminPushupRecords.length + adminSprintRecords.length}</div>
+                      </div>
+                      <div className="stat-icon stat-icon--violet"><IconActivity /></div>
+                    </div>
+                    <div className="stat-change">Sit-up + Push-up + Sprint</div>
+                  </div>
+                </div>
+                <div className="panel" style={{ marginTop: 0 }}>
+                  <div className="panel-header">
+                    <div className="panel-title"><IconClipboard /> Admin Dashboard Records</div>
+                    <div className="header-actions">
+                      <div style={{ position: 'relative' }}>
+                        <input
+                          type="text"
+                          value={dashboardSearch}
+                          onChange={(e) => setDashboardSearch(e.target.value)}
+                          placeholder="Search officer name..."
+                          className="filter-input"
+                          style={{ minWidth: 240 }}
+                        />
+                      </div>
                     </div>
                   </div>
-                  <div className="admin-record-tabs" style={{ marginBottom: 12 }}>
+                  <div className="filter-bar" style={{ gap: 8, flexWrap: 'wrap' }}>
                     <button type="button" className={`admin-record-tab ${dashboardAdminTab === 'walk' ? 'active' : ''}`} onClick={() => setDashboardAdminTab('walk')}>
-                      Walk Test
+                      <IconWalk /> Walk Test
                     </button>
                     <button type="button" className={`admin-record-tab ${dashboardAdminTab === 'bmi' ? 'active' : ''}`} onClick={() => setDashboardAdminTab('bmi')}>
-                      BMI
+                      <IconScale /> BMI
                     </button>
                     <button type="button" className={`admin-record-tab ${dashboardAdminTab === 'situp' ? 'active' : ''}`} onClick={() => setDashboardAdminTab('situp')}>
-                      1 Min Sit-up
+                      <IconActivity /> 1 Min Sit-up
                     </button>
                     <button type="button" className={`admin-record-tab ${dashboardAdminTab === 'pushup' ? 'active' : ''}`} onClick={() => setDashboardAdminTab('pushup')}>
-                      Push-up
+                      <IconTarget /> Push-up
                     </button>
                     <button type="button" className={`admin-record-tab ${dashboardAdminTab === 'sprint' ? 'active' : ''}`} onClick={() => setDashboardAdminTab('sprint')}>
-                      300m Sprint
+                      <IconZap /> 300m Sprint
                     </button>
+                    <span style={{ marginLeft: 'auto', fontSize: 12, color: 'var(--muted)', alignSelf: 'center' }}>Read-only view of officer test records</span>
                   </div>
-                  <p className="dashboard-subtitle">Read-only view of officer test records by section.</p>
                   <div className="table-wrap">
                     {dashboardAdminTab === 'walk' && (
                       <>
@@ -1635,7 +1778,7 @@ function App() {
                     )}
                   </div>
                 </div>
-              )}
+              </>)}
             </div>
           )}
           {activePage === 'officerProfile' && (
@@ -2043,28 +2186,105 @@ function App() {
             </div>
           )}
           {activePage === 'settings' && (
-            <div style={{ padding: 24 }}>
-              <h2 style={{ fontFamily: 'Rajdhani', fontSize: 22, marginBottom: 16 }}>Settings</h2>
-              <p style={{ color: 'var(--muted)', marginBottom: 16 }}>
-                Manage your session and application preferences.
-              </p>
-              <button
-                type="button"
-                onClick={handleLogout}
-                style={{
-                  padding: '10px 16px',
-                  borderRadius: 6,
-                  border: 'none',
-                  background: '#b00020',
-                  color: 'white',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  fontFamily: 'Rajdhani',
-                  letterSpacing: '0.03em'
-                }}
-              >
-                ⏻ Log Out
-              </button>
+            <div className="settings-page">
+              {/* Page Header */}
+              <div className="settings-page-header">
+                <div className="settings-page-header-icon"><IconSettings /></div>
+                <div>
+                  <h1 className="settings-page-title">Settings</h1>
+                  <p className="settings-page-subtitle">Manage your session and account preferences</p>
+                </div>
+              </div>
+
+              <div className="settings-grid">
+                {/* Session Card */}
+                <div className="settings-card">
+                  <div className="settings-card-header">
+                    <span className="settings-card-icon"><IconProfile /></span>
+                    <div>
+                      <div className="settings-card-title">Active Session</div>
+                      <div className="settings-card-desc">Your currently authenticated account</div>
+                    </div>
+                  </div>
+                  <div className="settings-session-info">
+                    <div className="settings-session-avatar">
+                      {getInitials(userName || 'U')}
+                    </div>
+                    <div className="settings-session-details">
+                      <div className="settings-session-name">{userName || '—'}</div>
+                      <div className="settings-session-role">
+                        <span className={`settings-role-badge settings-role-badge--${userRole}`}>
+                          <IconShield /> {userRole === 'admin' ? 'Administrator' : 'Officer'}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="settings-session-status">
+                      <span className="settings-status-dot" />
+                      <span className="settings-status-text">Online</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* System Info Card */}
+                <div className="settings-card">
+                  <div className="settings-card-header">
+                    <span className="settings-card-icon"><IconMonitor /></span>
+                    <div>
+                      <div className="settings-card-title">System Information</div>
+                      <div className="settings-card-desc">Portal and environment details</div>
+                    </div>
+                  </div>
+                  <div className="settings-info-list">
+                    <div className="settings-info-row">
+                      <span className="settings-info-label">System</span>
+                      <span className="settings-info-value">PNP HRDD Portal</span>
+                    </div>
+                    <div className="settings-info-row">
+                      <span className="settings-info-label">Access Level</span>
+                      <span className="settings-info-value">{userRole === 'admin' ? 'Full Admin Access' : 'Officer Access'}</span>
+                    </div>
+                    <div className="settings-info-row">
+                      <span className="settings-info-label">Session Started</span>
+                      <span className="settings-info-value">{new Date().toLocaleString('en-PH', { dateStyle: 'medium', timeStyle: 'short' })}</span>
+                    </div>
+                    <div className="settings-info-row">
+                      <span className="settings-info-label">Version</span>
+                      <span className="settings-info-value">v1.0.0</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Danger Zone Card */}
+                <div className="settings-card settings-card--danger">
+                  <div className="settings-card-header">
+                    <span className="settings-card-icon"><IconAlertTriangle /></span>
+                    <div>
+                      <div className="settings-card-title">Danger Zone</div>
+                      <div className="settings-card-desc">Actions here will end your current session</div>
+                    </div>
+                  </div>
+                  <div className="settings-danger-body">
+                    <div className="settings-danger-info">
+                      <div className="settings-danger-label">Sign Out</div>
+                      <div className="settings-danger-hint">
+                        You will be returned to the login screen. All unsaved changes will be lost.
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className="settings-logout-btn"
+                      onClick={() => {
+                        if (window.confirm('Are you sure you want to sign out?')) {
+                          handleLogout()
+                        }
+                      }}
+                    >
+                      <IconLogOut />
+                      Sign Out
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -2084,7 +2304,7 @@ function App() {
           <div className="modal">
             <div className="modal-header">
               <div className="modal-title">
-                {editingUser ? '✏️ Edit User' : '🛡️ Register New User'}
+                {editingUser ? <><IconEdit /> Edit User</> : <><IconShield /> Register New User</>}
               </div>
               <button
                 className="modal-close"

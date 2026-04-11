@@ -1,3 +1,5 @@
+const EditIcon = () => (<svg viewBox="0 0 24 24" style={{width:18,height:18,stroke:'currentColor',strokeWidth:1.8,fill:'none',opacity:0.9}}><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>)
+
 function ExerciseModals({
   isWalkTestModalOpen,
   editingWalkTest,
@@ -29,7 +31,7 @@ function ExerciseModals({
         >
           <div className="modal">
             <div className="modal-header">
-              <div className="modal-title">✏️ Edit Walk Test Record</div>
+              <div className="modal-title"><EditIcon /> Edit Walk Test Record</div>
               <button
                 className="modal-close"
                 type="button"
@@ -130,7 +132,7 @@ function ExerciseModals({
         >
           <div className="modal">
             <div className="modal-header">
-              <div className="modal-title">✏️ Edit BMI Record</div>
+              <div className="modal-title"><EditIcon /> Edit BMI Record</div>
               <button
                 className="modal-close"
                 type="button"

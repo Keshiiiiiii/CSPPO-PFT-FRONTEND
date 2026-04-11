@@ -1,79 +1,184 @@
- .create-account-panel {
-  background: var(--white);
-  border-radius: 16px;
-  box-shadow: var(--shadow-deep);
-  border: 1px solid rgba(59, 130, 246, 0.2);
-  padding: 24px;
-  width: 360px;
-  max-width: 90vw;
+/* ============================================================
+   CREATE ACCOUNT — v2.0 Premium Redesign
+   ============================================================ */
+
+.create-account-panel {
+  position: relative;
+  z-index: 1;
+  width: 440px;
+  max-width: 92vw;
+  background: rgba(14, 31, 66, 0.72);
+  backdrop-filter: blur(28px) saturate(1.8);
+  -webkit-backdrop-filter: blur(28px) saturate(1.8);
+  border-radius: var(--radius-2xl, 20px);
+  box-shadow:
+    var(--shadow-deep, 0 20px 60px rgba(6, 13, 30, 0.6)),
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  padding: var(--space-8, 32px) var(--space-8, 32px) var(--space-6, 24px);
+  animation: scaleIn 0.55s var(--ease-spring, cubic-bezier(0.34, 1.56, 0.64, 1)) both;
 }
 
-.create-account-panel h2 {
-  margin: 0 0 14px;
-  font-size: 20px;
-  color: var(--navy);
+.create-account-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: var(--space-6);
+  right: var(--space-6);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+}
+
+.create-account-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3, 12px);
+  margin-bottom: var(--space-7, 28px);
+}
+
+.create-account-title {
   font-family: 'Rajdhani', sans-serif;
+  font-size: var(--text-xl, 20px);
+  font-weight: var(--font-bold, 700);
+  color: var(--white, #fff);
+  letter-spacing: var(--tracking-wider, 1px);
+  text-align: center;
+  text-shadow: 0 0 24px rgba(37, 99, 235, 0.4);
+}
+
+.create-account-subtitle {
+  font-size: var(--text-xs, 11px);
+  letter-spacing: var(--tracking-caps, 2.5px);
+  text-transform: uppercase;
+  color: var(--blue-bright, #60a5fa);
+  font-weight: var(--font-semibold, 600);
+  opacity: 0.9;
 }
 
 .create-account-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-4, 16px);
 }
 
-.create-account-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.create-account-group label {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--navy-mid);
+.create-account-form label {
+  font-size: var(--text-xs, 11px);
+  font-weight: var(--font-semibold, 600);
+  letter-spacing: var(--tracking-wider, 1.2px);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  color: var(--sky, #93c5fd);
+  opacity: 0.9;
+  display: block;
+  margin-bottom: var(--space-2, 6px);
 }
 
-.create-account-input {
-  font-family: 'Source Sans 3', sans-serif;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1.5px solid rgba(148, 163, 184, 0.7);
-  background: var(--off-white);
-  color: var(--navy);
-}
-
-.create-account-input:focus {
-  border-color: var(--blue);
+.create-account-form input,
+.create-account-form select {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg, 14px);
+  padding: var(--space-3, 12px) var(--space-4, 16px);
+  font-size: var(--text-base, 14px);
+  color: var(--white, #fff);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  font-family: 'Inter', sans-serif;
+  transition: border-color var(--duration-normal) var(--ease-smooth), box-shadow var(--duration-normal), background var(--duration-normal);
 }
 
-.create-account-actions {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  margin-top: 10px;
+.create-account-form input:focus,
+.create-account-form select:focus {
+  border-color: var(--blue-light, #3b82f6);
+  background: rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }
 
-.create-account-btn-primary,
-.create-account-btn-secondary {
-  border: none;
-  border-radius: 999px;
-  padding: 10px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
+.create-account-form input::placeholder {
+  color: rgba(148, 163, 184, 0.5);
+}
+
+.create-account-form select option {
+  background: var(--navy-mid, #0d1f45);
+  color: var(--white, #fff);
 }
 
 .create-account-btn-primary {
-  background: linear-gradient(135deg, var(--blue), var(--blue-light));
-  color: var(--white);
+  position: relative;
+  background: linear-gradient(135deg, var(--blue, #2563eb) 0%, var(--blue-light, #3b82f6) 100%);
+  color: var(--white, #fff);
+  border: none;
+  border-radius: var(--radius-lg, 14px);
+  padding: var(--space-3, 14px) var(--space-7, 28px);
+  font-size: var(--text-base, 14px);
+  font-weight: var(--font-bold, 700);
+  letter-spacing: var(--tracking-wide, 0.5px);
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(37, 99, 235, 0.5);
+  font-family: 'Inter', sans-serif;
+  transition: transform var(--duration-normal) var(--ease-spring), box-shadow var(--duration-normal);
+  overflow: hidden;
+  width: 100%;
+  min-height: 48px;
+  margin-top: var(--space-2, 8px);
 }
 
-.create-account-btn-secondary {
-  background: var(--off-white);
-  color: var(--navy);
-  border: 1px solid rgba(148, 163, 184, 0.7);
+.create-account-btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.create-account-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 26px rgba(37, 99, 235, 0.6);
+}
+
+.create-account-btn-primary:hover::after {
+  left: 150%;
+}
+
+.create-account-btn-primary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.create-account-footer-link {
+  text-align: center;
+  margin-top: var(--space-4, 16px);
+  font-size: var(--text-xs, 11px);
+  color: rgba(148, 163, 184, 0.6);
+}
+
+.create-account-footer-link button {
+  background: none;
+  border: none;
+  color: var(--blue-bright, #60a5fa);
+  cursor: pointer;
+  font-size: var(--text-xs, 11px);
+  font-family: 'Inter', sans-serif;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color var(--duration-normal);
+}
+
+.create-account-footer-link button:hover {
+  color: #93c5fd;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .create-account-panel {
+    padding: var(--space-6) var(--space-5) var(--space-5);
+    border-radius: var(--radius-xl);
+  }
+
+  .create-account-title {
+    font-size: var(--text-lg);
+  }
 }

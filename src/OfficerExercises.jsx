@@ -5,6 +5,12 @@ import SitUp from './exercises/SitUp.jsx'
 import PushUp from './exercises/PushUp.jsx'
 import Sprint300m from './exercises/Sprint300m.jsx'
 
+const TabIconWalk = () => (<svg viewBox="0 0 24 24"><circle cx="14" cy="5" r="2"/><path d="M18 22l-3-3-1.5 3L9 16l-4 4"/><path d="M10 16l2-5 3 1"/></svg>)
+const TabIconScale = () => (<svg viewBox="0 0 24 24"><path d="M16 16v3a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4"/><line x1="2" y1="12" x2="20" y2="12"/><path d="M12 2v20"/></svg>)
+const TabIconActivity = () => (<svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>)
+const TabIconTarget = () => (<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>)
+const TabIconZap = () => (<svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>)
+
 function OfficerExercises({
   officerDashboardTab,
   setOfficerDashboardTab,
@@ -47,11 +53,11 @@ function OfficerExercises({
   return (
     <div className="officer-exercises">
       <div className="admin-record-tabs" style={{ marginBottom: 12 }}>
-        <button type="button" className={`admin-record-tab ${officerDashboardTab === 'walk' ? 'active' : ''}`} onClick={() => setOfficerDashboardTab('walk')}>Walk Test</button>
-        <button type="button" className={`admin-record-tab ${officerDashboardTab === 'bmi' ? 'active' : ''}`} onClick={() => setOfficerDashboardTab('bmi')}>BMI</button>
-        <button type="button" className={`admin-record-tab ${officerDashboardTab === 'situp' ? 'active' : ''}`} onClick={() => setOfficerDashboardTab('situp')}>1 Min Sit-up</button>
-        <button type="button" className={`admin-record-tab ${officerDashboardTab === 'pushup' ? 'active' : ''}`} onClick={() => setOfficerDashboardTab('pushup')}>Push-up</button>
-        <button type="button" className={`admin-record-tab ${officerDashboardTab === 'sprint' ? 'active' : ''}`} onClick={() => setOfficerDashboardTab('sprint')}>300m Sprint</button>
+        <button type="button" className={`admin-record-tab ${officerDashboardTab === 'walk' ? 'active' : ''}`} onClick={() => setOfficerDashboardTab('walk')}><TabIconWalk /> Walk Test</button>
+        <button type="button" className={`admin-record-tab ${officerDashboardTab === 'bmi' ? 'active' : ''}`} onClick={() => setOfficerDashboardTab('bmi')}><TabIconScale /> BMI</button>
+        <button type="button" className={`admin-record-tab ${officerDashboardTab === 'situp' ? 'active' : ''}`} onClick={() => setOfficerDashboardTab('situp')}><TabIconActivity /> 1 Min Sit-up</button>
+        <button type="button" className={`admin-record-tab ${officerDashboardTab === 'pushup' ? 'active' : ''}`} onClick={() => setOfficerDashboardTab('pushup')}><TabIconTarget /> Push-up</button>
+        <button type="button" className={`admin-record-tab ${officerDashboardTab === 'sprint' ? 'active' : ''}`} onClick={() => setOfficerDashboardTab('sprint')}><TabIconZap /> 300m Sprint</button>
       </div>
 
       {officerDashboardTab === 'walk' && (

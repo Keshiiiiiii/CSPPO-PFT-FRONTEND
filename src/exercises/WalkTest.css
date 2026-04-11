@@ -1,5 +1,37 @@
-.walktest-header { display: flex; justify-content: space-between; align-items: center; }
-.walktest-form { margin-bottom: 14px; }
-.walktest-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-.walktest-btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
-.walktest-message { color: var(--navy); font-weight: 600; }
+/* ---- Walk Test Exercise — v2.0 ---- */
+.walktest-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-3, 10px); }
+.walktest-section { animation: fadeInUp 0.35s var(--ease-smooth, cubic-bezier(0.4,0,0.2,1)) both; }
+.walktest-form {
+  margin-bottom: var(--space-5, 18px);
+  padding: var(--space-5, 20px);
+  background: rgba(243, 247, 255, 0.9);
+  border-radius: var(--radius-lg, 14px);
+  border: 1px solid rgba(59, 130, 246, 0.12);
+  animation: fadeInUp 0.3s var(--ease-smooth) both;
+}
+.walktest-actions { display: flex; gap: var(--space-3, 10px); align-items: center; flex-wrap: wrap; margin-top: var(--space-2, 6px); }
+.walktest-btn-secondary {
+  background: rgba(255,255,255,0.9);
+  color: var(--slate, #475569);
+  border: 1.5px solid rgba(148,163,184,0.5);
+  border-radius: var(--radius-md, 10px);
+  padding: var(--space-2, 9px) var(--space-5, 18px);
+  font-size: var(--text-sm, 13px);
+  font-weight: var(--font-semibold, 600);
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all var(--duration-normal, 0.2s) var(--ease-smooth);
+  min-height: 40px;
+}
+.walktest-btn-secondary:hover { border-color: var(--coral, #ef4444); color: var(--coral, #ef4444); background: rgba(239,68,68,0.05); }
+.walktest-message {
+  font-size: var(--text-sm, 13px); font-weight: var(--font-semibold, 600); padding: var(--space-2, 8px) var(--space-4, 14px);
+  border-radius: var(--radius-md, 8px); background: rgba(37,99,235,0.07);
+  color: var(--royal, #1a4fd6); border: 1px solid rgba(37,99,235,0.15);
+  animation: fadeInUp 0.25s ease both;
+}
+/* Responsive */
+@media (max-width: 768px) {
+  .walktest-form { padding: var(--space-4); }
+  .walktest-actions { flex-direction: column; align-items: stretch; }
+}
