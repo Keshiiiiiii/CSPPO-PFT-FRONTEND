@@ -51,7 +51,9 @@ const parseResponse = async (response) => {
   if (!response.ok) {
     const detailMsg = typeof payload?.detail === 'object' ? JSON.stringify(payload.detail) : payload?.detail;
     const backendMessage = payload?.message || payload?.error || detailMsg || text || response.statusText
-    throw new Error(backendMessage || `Server error: ${response.status}`)
+    const error = new Error(backendMessage || `Server error: ${response.status}`)
+    error.status = response.status
+    throw error
   }
 
   return payload
@@ -449,6 +451,15 @@ export const officerGetProfile = async () => {
   const response = await fetch(buildOfficerUrl('/auth/officer/profile'), {
     method: 'GET',
     headers: getAuthHeaders(),
+  })
+  return await parseResponse(response)
+}
+
+export const officerCreateProfile = async (profileData) => {
+  const response = await fetch(buildOfficerUrl('/auth/officer/create_profile'), {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(profileData),
   })
   return await parseResponse(response)
 }

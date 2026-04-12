@@ -33,6 +33,7 @@ import {
 
 /* ── API Functions ── */
 import {
+  officerCreateProfile,
   officerGetProfile,
   getOfficerInfo,
   officerGetWalkTests,
@@ -185,66 +186,66 @@ function App() {
       return
     }
     let cancelled = false
-    ;(async () => {
-      setOfficerProfileLoading(true)
-      setOfficerProfileError('')
-      try {
-        const [profileResult, infoResult] = await Promise.allSettled([officerGetProfile(), getOfficerInfo()])
-        if (cancelled) return
-        if (profileResult.status === 'fulfilled' && profileResult.value) {
-          const data = profileResult.value
-          setAccounts([data])
-          const display = `${data?.first_name || ''} ${data?.last_name || ''}`.trim()
-          if (display) setUserName(display)
-        } else {
-          setAccounts([])
-          if (profileResult.status === 'rejected') setOfficerProfileError(profileResult.reason?.message || 'Failed to load profile')
+      ; (async () => {
+        setOfficerProfileLoading(true)
+        setOfficerProfileError('')
+        try {
+          const [profileResult, infoResult] = await Promise.allSettled([officerGetProfile(), getOfficerInfo()])
+          if (cancelled) return
+          if (profileResult.status === 'fulfilled' && profileResult.value) {
+            const data = profileResult.value
+            setAccounts([data])
+            const display = `${data?.first_name || ''} ${data?.last_name || ''}`.trim()
+            if (display) setUserName(display)
+          } else {
+            setAccounts([])
+            if (profileResult.status === 'rejected') setOfficerProfileError(profileResult.reason?.message || 'Failed to load profile')
+          }
+          if (infoResult.status === 'fulfilled' && infoResult.value) setOfficerInfo(infoResult.value)
+          else setOfficerInfo(null)
+        } catch (e) {
+          if (!cancelled) setOfficerProfileError(e.message || 'Failed to load profile')
+        } finally {
+          if (!cancelled) setOfficerProfileLoading(false)
         }
-        if (infoResult.status === 'fulfilled' && infoResult.value) setOfficerInfo(infoResult.value)
-        else setOfficerInfo(null)
-      } catch (e) {
-        if (!cancelled) setOfficerProfileError(e.message || 'Failed to load profile')
-      } finally {
-        if (!cancelled) setOfficerProfileLoading(false)
-      }
-    })()
+      })()
     return () => { cancelled = true }
   }, [isAuthenticated, activePage, isAdmin])
 
   // Auto-refresh BMI when tab changes
   useEffect(() => {
     if (!isAuthenticated || isAdmin || activePage !== 'dashboard' || officerDashboardTab !== 'bmi') return
-    ;(async () => { const fresh = await officerGetBmi().catch(() => []); setOfficerBmiRecords(toArray(fresh)) })()
+      ; (async () => { const fresh = await officerGetBmi().catch(() => []); setOfficerBmiRecords(toArray(fresh)) })()
   }, [isAuthenticated, isAdmin, activePage, officerDashboardTab])
 
   // Auto-refresh pushup when tab changes
   useEffect(() => {
     if (!isAuthenticated || isAdmin || activePage !== 'dashboard' || officerDashboardTab !== 'pushup') return
-    ;(async () => {
-      setPushupMessage('')
-      try { const fresh = await officerGetPushupRecords(); setOfficerPushupRecords(normalizePushupRecords(fresh)) }
-      catch (error) {
-        const msg = String(error?.message || '')
-        setPushupMessage(msg.toLowerCase().includes('profile not found')
-          ? 'Cannot load push-up records: Officer profile not found. Please complete your Officer Profile first.'
-          : msg || 'Failed to load push-up records.')
-      }
-    })()
+      ; (async () => {
+        setPushupMessage('')
+        try { const fresh = await officerGetPushupRecords(); setOfficerPushupRecords(normalizePushupRecords(fresh)) }
+        catch (error) {
+          const msg = String(error?.message || '')
+          setPushupMessage(msg.toLowerCase().includes('profile not found')
+            ? 'Cannot load push-up records: Officer profile not found. Please complete your Officer Profile first.'
+            : msg || 'Failed to load push-up records.')
+        }
+      })()
   }, [isAuthenticated, isAdmin, activePage, officerDashboardTab])
 
   // Auto-refresh sprint when tab changes
   useEffect(() => {
     if (!isAuthenticated || isAdmin || activePage !== 'dashboard' || officerDashboardTab !== 'sprint') return
-    ;(async () => {
-      setSprintMessage('')
-      try { const fresh = await officerGetSprintRecords(); setOfficerSprintRecords(normalizeSprintRecords(fresh).filter(isSprintLikeRecord)) }
-      catch (error) {
-        const msg = String(error?.message || '')
-        setSprintMessage(msg.toLowerCase().includes('profile not found')
-          ? 'Cannot load sprint records: Officer profile not found. Please complete your Officer Profile first.'
-          : msg || 'Failed to load sprint records.')
-      }
-    })()
+      ; (async () => {
+        setSprintMessage('')
+        try { const fresh = await officerGetSprintRecords(); setOfficerSprintRecords(normalizeSprintRecords(fresh).filter(isSprintLikeRecord)) }
+        catch (error) {
+          const msg = String(error?.message || '')
+          setSprintMessage(msg.toLowerCase().includes('profile not found')
+            ? 'Cannot load sprint records: Officer profile not found. Please complete your Officer Profile first.'
+            : msg || 'Failed to load sprint records.')
+        }
+      })()
   }, [isAuthenticated, isAdmin, activePage, officerDashboardTab])
 
   /* ============================================================
@@ -310,6 +311,19 @@ function App() {
       setLoginError('Account created successfully! Please sign in.')
     } catch (error) {
       setLoginError(error.message || 'Failed to create account. Please try again.')
+    }
+  }
+
+  const handleCreateOfficerProfile = async (profileData) => {
+    try {
+      setOfficerProfileLoading(true)
+      await officerCreateProfile(profileData)
+      await refreshProfilePage()
+      window.alert('Profile created successfully!')
+    } catch (error) {
+      window.alert('Failed to create profile: ' + (error?.message || 'Unknown error'))
+    } finally {
+      setOfficerProfileLoading(false)
     }
   }
 
@@ -519,11 +533,11 @@ function App() {
         test_date: normalizeDate(situpEditForm.test_date) || normalizeDate(new Date().toISOString())
       }
       await adminUpdateSitupRecord(editingSitup.id, payload)
-      
+
       const fresh = await adminGetSitupRecords().catch(() => null)
       if (fresh) setAdminSitupRecords(toArray(fresh))
       else setAdminSitupRecords((prev) => prev.map(r => r.id === editingSitup.id ? { ...r, ...payload } : r))
-      
+
       setIsSitupModalOpen(false)
       setEditingSitup(null)
       window.alert('Sit-up record updated successfully.')
@@ -561,11 +575,11 @@ function App() {
         test_date: normalizeDate(pushupEditForm.test_date) || normalizeDate(new Date().toISOString())
       }
       await adminUpdatePushupRecord(editingPushup.id, payload)
-      
+
       const fresh = await adminGetPushupRecords().catch(() => null)
       if (fresh) setAdminPushupRecords(toArray(fresh))
       else setAdminPushupRecords((prev) => prev.map(r => r.id === editingPushup.id ? { ...r, ...payload } : r))
-      
+
       setIsPushupModalOpen(false)
       setEditingPushup(null)
       window.alert('Push-up record updated successfully.')
@@ -604,11 +618,11 @@ function App() {
         test_date: normalizeDate(sprintEditForm.test_date) || normalizeDate(new Date().toISOString())
       }
       await adminUpdateSprintRecord(editingSprint.id, payload)
-      
+
       const fresh = await adminGetSprintRecords().catch(() => null)
       if (fresh) setAdminSprintRecords(toArray(fresh))
       else setAdminSprintRecords((prev) => prev.map(r => r.id === editingSprint.id ? { ...r, ...payload } : r))
-      
+
       setIsSprintModalOpen(false)
       setEditingSprint(null)
       window.alert('Sprint record updated successfully.')
@@ -802,6 +816,7 @@ function App() {
           {activePage === 'officerProfile' && (
             <OfficerProfile isAdmin={isAdmin} userName={userName} accounts={accounts} officerInfo={officerInfo}
               officerProfileError={officerProfileError} officerProfileLoading={officerProfileLoading} adminProfileForPage={adminProfileForPage}
+              onCreateProfile={handleCreateOfficerProfile}
             />
           )}
 
