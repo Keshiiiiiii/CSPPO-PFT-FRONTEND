@@ -1,5 +1,6 @@
 import { useRef } from 'react'
-import './user.css'
+import './css/user.css'
+import { getUserDisplayName, normalizeId, idsMatch } from './utils.js'
 
 function User({
   users,
@@ -25,32 +26,9 @@ function User({
   onExportFiltered,
   onExportAll,
   adminWalkTests,
-  getOfficerName
+  getOfficerName,
 }) {
   const fileInputRef = useRef(null)
-
-  const getUserDisplayName = (u) => {
-    if (!u) return ''
-    const full = [u.first_name ?? u.firstName, u.last_name ?? u.lastName].filter(Boolean).join(' ').trim()
-    return String(
-      u.full_name ??
-        u.name ??
-        u.officer_name ??
-        u.username ??
-        u.user_name ??
-        full ??
-        ''
-    ).trim()
-  }
-
-  const normalizeId = (v) => String(v ?? '').trim().replace(/^USR-/i, '').replace(/^0+/, '')
-  const idsMatch = (a, b) => {
-    const sa = String(a ?? '').trim()
-    const sb = String(b ?? '').trim()
-    if (!sa || !sb) return false
-    if (sa === sb) return true
-    return normalizeId(sa) === normalizeId(sb)
-  }
 
   const handleImportClick = () => {
     fileInputRef.current?.click()

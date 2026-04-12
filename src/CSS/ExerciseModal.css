@@ -1,0 +1,419 @@
+/* ============================================================
+   OFFICER EXERCISE MODAL — Premium Design System v3.0
+   ============================================================
+   Shared modal styles for all exercise creation forms.
+   Uses glassmorphism, micro-animations, and a refined layout.
+   ============================================================ */
+
+/* ── Modal Overlay ── */
+.exercise-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6, 13, 30, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: exModalFadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) both;
+  padding: 24px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  box-sizing: border-box;
+}
+
+/* ── Modal Card ── */
+.exercise-modal {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  background: linear-gradient(168deg, #ffffff 0%, #f8faff 100%);
+  border-radius: 20px;
+  box-shadow:
+    0 24px 80px rgba(6, 13, 30, 0.18),
+    0 8px 32px rgba(37, 99, 235, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(37, 99, 235, 0.08);
+  overflow: hidden;
+  animation: exModalSlideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* ── Accent Bar (top gradient stripe) ── */
+.exercise-modal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #2563eb, #7c3aed, #06b6d4);
+  border-radius: 20px 20px 0 0;
+}
+
+/* ── Modal Header ── */
+.exercise-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 28px 0;
+}
+
+.exercise-modal__header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.exercise-modal__icon-ring {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(124, 58, 237, 0.08));
+  border: 1.5px solid rgba(37, 99, 235, 0.15);
+  flex-shrink: 0;
+}
+
+.exercise-modal__icon-ring svg {
+  width: 22px;
+  height: 22px;
+  stroke: #2563eb;
+  stroke-width: 1.8;
+  fill: none;
+}
+
+.exercise-modal__title {
+  font-family: 'Rajdhani', 'Inter', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: 0.3px;
+  line-height: 1.2;
+}
+
+.exercise-modal__subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.78rem;
+  color: #64748b;
+  font-weight: 500;
+  margin-top: 2px;
+  letter-spacing: 0.2px;
+}
+
+.exercise-modal__close {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(148, 163, 184, 0.3);
+  background: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  font-size: 18px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.exercise-modal__close:hover {
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.06);
+  transform: rotate(90deg);
+}
+
+/* ── Modal Body ── */
+.exercise-modal__body {
+  padding: 24px 28px 8px;
+}
+
+.exercise-modal__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.exercise-modal__field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.exercise-modal__field.full {
+  grid-column: 1 / -1;
+}
+
+.exercise-modal__label {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 650;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.exercise-modal__input,
+.exercise-modal__select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid rgba(148, 163, 184, 0.35);
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #1e293b;
+  background: rgba(255, 255, 255, 0.95);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  box-sizing: border-box;
+}
+
+.exercise-modal__input::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.exercise-modal__input:focus,
+.exercise-modal__select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1), 0 2px 8px rgba(37, 99, 235, 0.08);
+  background: #fff;
+}
+
+.exercise-modal__select {
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 38px;
+}
+
+/* ── Modal Footer ── */
+.exercise-modal__footer {
+  padding: 20px 28px 28px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.exercise-modal__btn-save {
+  flex: 1;
+  padding: 13px 20px;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 650;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.exercise-modal__btn-save::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  transition: left 0.5s ease;
+}
+
+.exercise-modal__btn-save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.45);
+}
+
+.exercise-modal__btn-save:hover::after {
+  left: 150%;
+}
+
+.exercise-modal__btn-save:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.exercise-modal__btn-save svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+}
+
+.exercise-modal__btn-cancel {
+  padding: 13px 24px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(148, 163, 184, 0.4);
+  background: rgba(255, 255, 255, 0.9);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.exercise-modal__btn-cancel:hover {
+  border-color: rgba(239, 68, 68, 0.45);
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.04);
+}
+
+/* ── Status Message ── */
+.exercise-modal__message {
+  grid-column: 1 / -1;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: rgba(37, 99, 235, 0.07);
+  color: #1d4ed8;
+  border: 1px solid rgba(37, 99, 235, 0.15);
+  animation: exModalFadeIn 0.25s ease both;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.exercise-modal__message--success {
+  background: rgba(16, 185, 129, 0.08);
+  color: #059669;
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.exercise-modal__message--error {
+  background: rgba(239, 68, 68, 0.08);
+  color: #dc2626;
+  border-color: rgba(239, 68, 68, 0.2);
+  animation: exModalShake 0.4s ease both;
+}
+
+/* ── Add Record Button (page-level) ── */
+.exercise-add-btn {
+  padding: 10px 22px;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 650;
+  letter-spacing: 0.4px;
+  color: #fff;
+  cursor: pointer;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  box-shadow: 0 3px 14px rgba(37, 99, 235, 0.3);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.exercise-add-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  fill: none;
+}
+
+.exercise-add-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  transition: left 0.5s ease;
+}
+
+.exercise-add-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.42);
+}
+
+.exercise-add-btn:hover::after {
+  left: 150%;
+}
+
+.exercise-add-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* ── Empty state ── */
+.exercise-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #94a3b8;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.exercise-empty svg {
+  width: 48px;
+  height: 48px;
+  stroke: #cbd5e1;
+  stroke-width: 1.2;
+  fill: none;
+  margin-bottom: 12px;
+  opacity: 0.6;
+}
+
+/* ── Animations ── */
+@keyframes exModalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes exModalSlideUp {
+  from { opacity: 0; transform: translateY(24px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes exModalShake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-3px); }
+  20%, 40%, 60%, 80% { transform: translateX(3px); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 560px) {
+  .exercise-modal {
+    max-width: 100%;
+    border-radius: 16px;
+  }
+  .exercise-modal__header,
+  .exercise-modal__body,
+  .exercise-modal__footer {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .exercise-modal__grid {
+    grid-template-columns: 1fr;
+  }
+  .exercise-modal__footer {
+    flex-direction: column-reverse;
+  }
+  .exercise-modal__btn-cancel {
+    width: 100%;
+    text-align: center;
+  }
+}

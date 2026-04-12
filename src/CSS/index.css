@@ -323,3 +323,12 @@ img {
   white-space: nowrap;
   border-width: 0;
 }
+
+/* ============================================================
+   KEYFRAMES: SPIN (loading spinners)
+   ============================================================ */
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
