@@ -107,6 +107,40 @@ export const toArray = (data) => {
   return []
 }
 
+/* ── Generic Record Extraction ── */
+const extractRecordsFromData = (data, validatorFn) => {
+  if (!data) return []
+
+  if (Array.isArray(data)) {
+    const valid = data.filter(validatorFn)
+    if (valid.length > 0) return valid
+  }
+
+  if (typeof data === 'object') {
+    if (validatorFn(data)) return [data]
+
+    for (const val of Object.values(data)) {
+      if (Array.isArray(val)) {
+        const valid = val.filter(validatorFn)
+        if (valid.length > 0) return valid
+      } else if (val && typeof val === 'object' && validatorFn(val)) {
+        return [val]
+      }
+    }
+
+    if (data.data) {
+      if (Array.isArray(data.data)) {
+        const valid = data.data.filter(validatorFn)
+        if (valid.length > 0) return valid
+      } else if (typeof data.data === 'object' && validatorFn(data.data)) {
+        return [data.data]
+      }
+    }
+  }
+
+  return []
+}
+
 /* ── Pushup Record Normalization ── */
 
 export const isPushupLikeRecord = (r) => {
@@ -123,31 +157,7 @@ export const isPushupLikeRecord = (r) => {
   )
 }
 
-export const normalizePushupRecords = (data) => {
-  const candidates = [
-    data,
-    data?.data,
-    data?.data?.data,
-    data?.results,
-    data?.items,
-    data?.records,
-    data?.pushup_records,
-    data?.push_up_records,
-    data?.officer_pushup_records,
-    data?.officer_pushup_record,
-    data?.pushup_record,
-    data?.push_up_record,
-  ]
-
-  for (const c of candidates) {
-    if (Array.isArray(c)) return c.filter((x) => x && typeof x === 'object')
-  }
-  for (const c of candidates) {
-    if (isPushupLikeRecord(c)) return [c]
-    if (c && typeof c === 'object' && isPushupLikeRecord(c.data)) return [c.data]
-  }
-  return []
-}
+export const normalizePushupRecords = (data) => extractRecordsFromData(data, isPushupLikeRecord)
 
 /* ── Sprint Record Normalization ── */
 
@@ -163,29 +173,7 @@ export const isSprintLikeRecord = (r) => {
   )
 }
 
-export const normalizeSprintRecords = (data) => {
-  const candidates = [
-    data,
-    data?.data,
-    data?.data?.data,
-    data?.results,
-    data?.items,
-    data?.records,
-    data?.sprint_records,
-    data?.sprint_record,
-    data?.officer_sprint_records,
-    data?.officer_sprint_record,
-  ]
-
-  for (const c of candidates) {
-    if (Array.isArray(c)) return c.filter((x) => x && typeof x === 'object')
-  }
-  for (const c of candidates) {
-    if (isSprintLikeRecord(c)) return [c]
-    if (c && typeof c === 'object' && isSprintLikeRecord(c.data)) return [c.data]
-  }
-  return []
-}
+export const normalizeSprintRecords = (data) => extractRecordsFromData(data, isSprintLikeRecord)
 
 /* ── Date Normalization ── */
 

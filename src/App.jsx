@@ -419,16 +419,18 @@ function App() {
     try {
       setPushupMessage('Saving push-up record...')
       const created = await officerCreatePushupRecord({ reps, age, gender: pushupForm.gender, test_date: testDate })
-      if (created && typeof created === 'object' && !Array.isArray(created) && isPushupLikeRecord(created)) {
+      const createdRecords = normalizePushupRecords(created)
+      if (createdRecords.length > 0) {
         setOfficerPushupRecords((prev) => {
-          const next = [created, ...prev]; const seen = new Set()
+          const next = [...createdRecords, ...prev]; const seen = new Set()
           return next.filter((r, idx) => { const key = r?.id ?? `tmp-${idx}`; if (seen.has(key)) return false; seen.add(key); return true })
         })
       }
+
       const fresh = await officerGetPushupRecords().catch(() => [])
       const normalized = normalizePushupRecords(fresh)
       if (normalized.length > 0) setOfficerPushupRecords(normalized)
-      else setOfficerPushupRecords((prev) => prev.filter((x) => x && typeof x === 'object'))
+      else if (createdRecords.length === 0) setOfficerPushupRecords((prev) => prev.filter((x) => x && typeof x === 'object'))
       setPushupMessage('Push-up record created successfully.'); setIsAddingPushup(false)
       setPushupForm({ reps: '', age: '', gender: 'male', test_date: '' })
     } catch (error) {
