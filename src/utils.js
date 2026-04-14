@@ -175,6 +175,28 @@ export const isSprintLikeRecord = (r) => {
 
 export const normalizeSprintRecords = (data) => extractRecordsFromData(data, isSprintLikeRecord)
 
+/* ── BMI Data Normalization ── */
+
+export const getBmiHeight = (r) => {
+  if (!r) return null
+  let h = parseFloat(r.height_meter ?? r.height ?? r.height_cm)
+  if (Number.isNaN(h) || h == null) return null
+  
+  // If the backend truncated height to integer '1' but preserved weight and BMI,
+  // we can reverse-engineer the precise height since BMI = weight / (height * height)
+  if (h === 1) {
+    const w = parseFloat(r.weight_kg ?? r.weight)
+    const bmi = parseFloat(r.bmi ?? r.bmi_value)
+    if (w > 0 && bmi > 0) {
+      const computedH = Math.sqrt(w / bmi)
+      if (!Number.isNaN(computedH) && computedH > 0) return computedH
+    }
+  }
+  
+  if (h > 10) return h / 100
+  return h
+}
+
 /* ── Date Normalization ── */
 
 export const normalizeDate = (v) => {

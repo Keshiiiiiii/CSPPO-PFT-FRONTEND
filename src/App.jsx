@@ -29,6 +29,7 @@ import {
   idsMatch,
   getOfficerName as getOfficerNameUtil,
   EMPTY_ADD_FORM,
+  getBmiHeight,
 } from './utils.js'
 
 /* ── API Functions ── */
@@ -335,6 +336,66 @@ function App() {
   }
 
   /* ============================================================
+     HANDLERS — Data Refresh
+     ============================================================ */
+
+  const handleGlobalRefresh = async () => {
+    if (activePage === 'officerProfile') {
+      await refreshProfilePage()
+      return
+    }
+    
+    if (isAdmin) {
+      try {
+        const adminInfo = await adminGetInfo().catch(() => null)
+        const officerProfiles = await adminGetAllOfficerProfiles().catch(() => [])
+        const walkTests = await adminGetWalkTests().catch(() => [])
+        const bmiRecords = await adminGetOfficerBmi().catch(() => [])
+        const situpRecords = await adminGetSitupRecords().catch(() => [])
+        const pushupRecords = await adminGetPushupRecords().catch(() => [])
+        const sprintRecords = await adminGetSprintRecords().catch(() => [])
+        
+        if (adminInfo) setUserName(adminInfo?.username || adminInfo?.user_name || adminInfo?.email || userName)
+        const normalizedProfiles = Array.isArray(officerProfiles) ? officerProfiles.map(normalizeUserRecord) : []
+        setAccounts(normalizedProfiles)
+        setUsers(normalizedProfiles)
+        setAdminWalkTests(walkTests)
+        setAdminBmiRecords(toArray(bmiRecords))
+        setAdminSitupRecords(toArray(situpRecords))
+        setAdminPushupRecords(toArray(pushupRecords))
+        setAdminSprintRecords(toArray(sprintRecords))
+      } catch (error) {
+        console.error('Refresh error:', error)
+      }
+    } else {
+      try {
+        const profile = await officerGetProfile().catch(() => null)
+        const info = await getOfficerInfo().catch(() => null)
+        const [walkRecords, bmiRecords, situpRecords, pushupRecords, sprintRecords] = await Promise.all([
+          officerGetWalkTests().catch(() => []), officerGetBmi().catch(() => []),
+          officerGetSitupRecords().catch(() => []), officerGetPushupRecords().catch(() => []),
+          officerGetSprintRecords().catch(() => []),
+        ])
+        
+        if (info) setOfficerInfo(info)
+        if (profile) {
+          const display = `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim() || userName
+          setUserName(display)
+          setAccounts([profile])
+        }
+        setUsers(walkRecords)
+        setOfficerWalkRecords(walkRecords)
+        setOfficerBmiRecords(toArray(bmiRecords))
+        setOfficerSitupRecords(toArray(situpRecords))
+        setOfficerPushupRecords(normalizePushupRecords(pushupRecords))
+        setOfficerSprintRecords(normalizeSprintRecords(sprintRecords))
+      } catch (error) {
+        console.error('Refresh error:', error)
+      }
+    }
+  }
+
+  /* ============================================================
      HANDLERS — Profile Refresh
      ============================================================ */
 
@@ -473,7 +534,8 @@ function App() {
   const openBmiModal = (record) => {
     const dateVal = normalizeDate(record?.month_taken)
     setEditingBmi(record)
-    setBmiEditForm({ height_meter: String(record?.height_meter ?? ''), weight_kg: String(record?.weight_kg ?? ''), month_taken: dateVal })
+    const h = getBmiHeight(record)
+    setBmiEditForm({ height_meter: h != null ? String(h) : '', weight_kg: String(record?.weight_kg ?? ''), month_taken: dateVal })
     setIsBmiModalOpen(true)
   }
 
@@ -778,7 +840,7 @@ function App() {
       />
 
       <main className="main">
-        <Topbar activePage={activePage} userName={userName} isAdmin={isAdmin} setMobileMenuOpen={setMobileMenuOpen} onRefresh={refreshProfilePage} />
+        <Topbar activePage={activePage} userName={userName} isAdmin={isAdmin} setMobileMenuOpen={setMobileMenuOpen} onRefresh={handleGlobalRefresh} />
 
         <div className="content">
           {/* ── Dashboard ── */}
@@ -861,7 +923,7 @@ function App() {
                           <td>{r.id ?? '—'}</td>
                           <td>{r.officer_profile_id ?? r.officer_id ?? '—'}</td>
                           <td>{getOfficerName(r.officer_profile_id || r.officer_id || r.account_id || r.user_id)}</td>
-                          <td>{(() => { const n = parseFloat(r.height_meter ?? r.height ?? r.height_cm); return Number.isNaN(n) ? '—' : n.toFixed(2) })()}</td>
+                          <td>{(() => { const h = getBmiHeight(r); return h != null ? h.toFixed(2) : '—' })()}</td>
                           <td>{r.weight_kg ?? r.weight ?? '—'}</td>
                           <td>{r.bmi ?? r.bmi_value ?? '—'}</td>
                           <td>{r.category ?? r.status ?? '—'}</td>

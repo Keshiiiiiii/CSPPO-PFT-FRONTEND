@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { IconClipboard, IconWalk, IconScale, IconActivity, IconTarget, IconZap } from './icons.jsx'
-import { getUserDisplayName, idsMatch } from './utils.js'
+import { getUserDisplayName, idsMatch, getBmiHeight } from './utils.js'
 
 /**
  * Admin Dashboard — read-only tab panel with tables for all exercise types.
@@ -172,10 +172,10 @@ function AdminDashboard({
                 <tr key={`dash-bmi-${r.id ?? i}`}>
                   <td>{r.id ?? '—'}</td>
                   <td>{getOfficerName(r.officer_profile_id || r.officer_id || r.account_id || r.user_id)}</td>
-                  <td>{(() => { const n = parseFloat(r.height_meter ?? r.height); return Number.isNaN(n) ? '—' : n.toFixed(2) })()}</td>
+                  <td>{(() => { const h = getBmiHeight(r); return h != null ? h.toFixed(2) : '—' })()}</td>
                   <td>{r.weight_kg ?? r.weight ?? '—'}</td>
-                  <td>{r.bmi ?? '—'}</td>
-                  <td>{r.category ?? '—'}</td>
+                  <td>{r.bmi ?? r.bmi_value ?? '—'}</td>
+                  <td>{r.category ?? r.status ?? '—'}</td>
                   <td>{r.month_taken ? new Date(r.month_taken).toLocaleDateString() : '—'}</td>
                 </tr>
               ))}

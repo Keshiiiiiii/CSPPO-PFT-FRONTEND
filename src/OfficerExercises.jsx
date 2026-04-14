@@ -1,4 +1,5 @@
 import ExerciseSection from './exercises/ExerciseSection.jsx'
+import { getBmiHeight } from './utils.js'
 
 /* ── Tab Icons ── */
 const TabIconWalk = () => (<svg viewBox="0 0 24 24"><circle cx="14" cy="5" r="2"/><path d="M18 22l-3-3-1.5 3L9 16l-4 4"/><path d="M10 16l2-5 3 1"/></svg>)
@@ -57,7 +58,7 @@ const EXERCISE_CONFIGS = {
     ],
     columns: [
       { key: 'id', label: 'ID' },
-      { key: 'height_meter', label: 'Height (m)', render: (r) => r.height_meter != null ? Number(r.height_meter).toFixed(2) : '—' },
+      { key: 'height_meter', label: 'Height (m)', render: (r) => { const h = getBmiHeight(r); return h != null ? h.toFixed(2) : '—' } },
       { key: 'weight_kg', label: 'Weight (kg)' },
       { key: 'bmi', label: 'BMI' },
       { key: 'category', label: 'Category' },
