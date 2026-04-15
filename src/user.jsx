@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import './css/user.css'
+import './CSS/user.css'
 import { getUserDisplayName, normalizeId, idsMatch } from './utils.js'
 
 function User({

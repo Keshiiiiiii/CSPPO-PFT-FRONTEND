@@ -1,5 +1,5 @@
 import { createPortal } from 'react-dom'
-import './css/ExerciseModal.css'
+import './CSS/ExerciseModal.css'
 
 /* ── Shared Icons ── */
 const CheckIcon = () => (<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>)

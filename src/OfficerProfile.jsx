@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import { getInitials, getUserDisplayName, formatBirthdayDisplay, formatSexDisplay } from './utils.js'
-import './css/ExerciseModal.css'
+import './CSS/ExerciseModal.css'
 
 /* ── Inline SVG Icons ── */
 const UserIcon = () => (
