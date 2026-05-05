@@ -7,7 +7,7 @@ function Sidebar({ activePage, setActivePage, isAdmin, userName, sidebarCollapse
   const navItems = [
     { key: 'dashboard', label: 'Dashboard', icon: <IconDashboard />, section: 'Main' },
     { key: 'officerProfile', label: isAdmin ? 'Admin Profile' : 'Officer Profile', icon: <IconProfile />, section: 'Main' },
-    ...(isAdmin ? [{ key: 'user', label: 'User Management', icon: <IconUsers />, section: 'Management', showDot: true }] : []),
+    { key: 'user', label: 'User Management', icon: <IconUsers />, section: 'Management', showDot: true },
     { key: 'settings', label: 'Settings', icon: <IconSettings />, section: null },
   ]
 

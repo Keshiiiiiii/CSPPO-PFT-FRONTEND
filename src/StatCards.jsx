@@ -1,7 +1,8 @@
 import { IconClipboard, IconTrendingUp, IconWalk, IconScale, IconActivity, IconUsers } from './icons.jsx'
+import AnimatedNumber from './AnimatedNumber.jsx'
 
 /**
- * Dashboard summary stat cards.
+ * Dashboard summary stat cards with animated number counters.
  * @param {object} props
  * @param {'officer'|'admin'} props.role
  * @param {object} props.counts - { total, walk, bmi, fitness }
@@ -51,7 +52,9 @@ function StatCards({ role, counts }) {
           <div className="stat-card-header">
             <div>
               <div className="stat-label">{card.label}</div>
-              <div className="stat-value">{card.value}</div>
+              <div className="stat-value">
+                <AnimatedNumber value={card.value} duration={900} />
+              </div>
             </div>
             <div className={`stat-icon ${card.iconClass}`}>{card.icon}</div>
           </div>

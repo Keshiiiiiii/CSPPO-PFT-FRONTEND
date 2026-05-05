@@ -31,7 +31,7 @@ const getAuthHeaders = (authKey) => {
 }
 
 const saveAuthToken = (data) => {
-  
+
   const token = data?.bearer_token || data?.access_token || data?.token
   if (token) {
     localStorage.setItem('authToken', token)
@@ -115,14 +115,14 @@ const handleOfflineLogin = async (loginData, type) => {
       acc.password === loginData.password &&
       acc.type === type
   )
-  
+
   if (!account) {
     throw new Error('Invalid badge number or password')
   }
-  
+
   const token = createMockToken(account)
   localStorage.setItem('authToken', token)
-  
+
   return {
     access_token: token,
     user: account,
@@ -423,6 +423,51 @@ export const officerGetBmi = async () => {
 
 export const officerCreateBmi = async (data) => {
   const response = await fetch(buildOfficerUrl('/auth/officer/create_bmi'), {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  })
+  return await parseResponse(response)
+}
+
+export const officerCreateOtherBmi = async (data) => {
+  const response = await fetch(buildOfficerUrl('/auth/officer/create_other_bmi'), {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  })
+  return await parseResponse(response)
+}
+
+export const officerCreateOtherSprint = async (data) => {
+  const response = await fetch(buildOfficerUrl('/auth/officer/create_sprint_byother'), {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  })
+  return await parseResponse(response)
+}
+
+export const officerCreateOtherPushup = async (data) => {
+  const response = await fetch(buildOfficerUrl('/auth/officer/create_pushup_other'), {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  })
+  return await parseResponse(response)
+}
+
+export const officerCreateOtherSitup = async (data) => {
+  const response = await fetch(buildOfficerUrl('/auth/officer/create_situp_by_other'), {
+    method: 'POST',
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  })
+  return await parseResponse(response)
+}
+
+export const officerCreateOtherWalkTest = async (data) => {
+  const response = await fetch(buildOfficerUrl('/auth/officer/create_walkrecord_byother'), {
     method: 'POST',
     headers: getAuthHeaders(),
     body: JSON.stringify(data),
@@ -746,6 +791,31 @@ export const adminGetInfo = async () => {
   })
   return await parseResponse(response)
 }
+
+export const adminGetSummary = async () => {
+  const response = await fetch(buildAdminUrl('/auth/admin/summary'), {
+    method: 'GET',
+    headers: getAuthHeaders(),
+  })
+  const data = await parseResponse(response)
+  if (Array.isArray(data)) return data
+  if (typeof data === 'object' && data !== null) {
+    for (const key in data) {
+      if (Array.isArray(data[key])) return data[key]
+    }
+  }
+  console.error('adminGetSummary: Could not find an array in response:', data)
+  return []
+}
+
+export const adminGetSummaryById = async (id) => {
+  const response = await fetch(buildAdminUrl(`/auth/admin/summary/${id}`), {
+    method: 'GET',
+    headers: getAuthHeaders(),
+  })
+  return await parseResponse(response)
+}
+
 
 // ==================== LEGACY API (Fallback) ====================
 // Users API

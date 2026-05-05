@@ -1,6 +1,12 @@
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect, useCallback } from 'react'
 import * as XLSX from 'xlsx'
-import './css/App.css'
+import './CSS/App.css'
+import './CSS/Toast.css'
+
+import { useToastState, ToastContainer } from './Toast.jsx'
+import { useConfirmDialog } from './ConfirmDialog.jsx'
+import GradeBadge, { StatusBadge } from './GradeBadge.jsx'
+import EmptyState from './EmptyState.jsx'
 
 /* ── Extracted Modules ── */
 import Login from './Login.jsx'
@@ -41,6 +47,11 @@ import {
   officerCreateWalkTest,
   officerGetBmi,
   officerCreateBmi,
+  officerCreateOtherBmi,
+  officerCreateOtherSprint,
+  officerCreateOtherPushup,
+  officerCreateOtherSitup,
+  officerCreateOtherWalkTest,
   officerGetSitupRecords,
   officerCreateSitupRecord,
   officerGetPushupRecords,
@@ -64,6 +75,7 @@ import {
   adminGetAllOfficerProfiles,
   adminUpdateWalkTest,
   adminDeleteWalkTest,
+  adminGetSummary,
   createUser,
   updateUser,
   deleteUser,
@@ -74,6 +86,10 @@ import {
    ============================================================ */
 
 function App() {
+  /* ── Toast & Confirm Dialog ── */
+  const { toasts, toast, dismiss: dismissToast } = useToastState()
+  const { confirm, ConfirmDialogComponent } = useConfirmDialog()
+
   /* ── Authentication State ── */
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [userRole, setUserRole] = useState('admin')
@@ -97,6 +113,7 @@ function App() {
   const [adminSitupRecords, setAdminSitupRecords] = useState([])
   const [adminPushupRecords, setAdminPushupRecords] = useState([])
   const [adminSprintRecords, setAdminSprintRecords] = useState([])
+  const [adminSummary, setAdminSummary] = useState([])
 
   /* ── Officer Records ── */
   const [officerWalkRecords, setOfficerWalkRecords] = useState([])
@@ -160,6 +177,21 @@ function App() {
   const [isSprintModalOpen, setIsSprintModalOpen] = useState(false)
   const [editingSprint, setEditingSprint] = useState(null)
   const [sprintEditForm, setSprintEditForm] = useState({ minutes: '', seconds: '0', age: '', gender: 'male', test_date: '' })
+
+  const [isAddOtherBmiModalOpen, setIsAddOtherBmiModalOpen] = useState(false)
+  const [addOtherBmiForm, setAddOtherBmiForm] = useState({ officer_profile_id: '', height_meter: '', weight_kg: '', month_taken: '' })
+
+  const [isAddOtherSprintModalOpen, setIsAddOtherSprintModalOpen] = useState(false)
+  const [addOtherSprintForm, setAddOtherSprintForm] = useState({ officer_id: '', minutes: '', seconds: '0', age: '', gender: 'male', test_date: '' })
+
+  const [isAddOtherPushupModalOpen, setIsAddOtherPushupModalOpen] = useState(false)
+  const [addOtherPushupForm, setAddOtherPushupForm] = useState({ officer_id: '', reps: '', age: '', gender: 'male', test_date: '' })
+
+  const [isAddOtherSitupModalOpen, setIsAddOtherSitupModalOpen] = useState(false)
+  const [addOtherSitupForm, setAddOtherSitupForm] = useState({ officer_id: '', reps: '', age: '', gender: 'male', test_date: '' })
+
+  const [isAddOtherWalkTestModalOpen, setIsAddOtherWalkTestModalOpen] = useState(false)
+  const [addOtherWalkTestForm, setAddOtherWalkTestForm] = useState({ officer_id: '', minutes: '', seconds: '0', age: '', gender: 'male', test_date: '' })
 
   const [dashboardGoNoGo, setDashboardGoNoGo] = useState('')
 
@@ -249,6 +281,28 @@ function App() {
       })()
   }, [isAuthenticated, isAdmin, activePage, officerDashboardTab])
 
+  // Auto-refresh admin summary when switching to overall score tab
+  useEffect(() => {
+    if (!isAuthenticated || !isAdmin) return
+    const isOverallTabActive =
+      (activePage === 'dashboard' && dashboardAdminTab === 'overall') ||
+      (activePage === 'user' && adminRecordsTab === 'overall')
+    
+    if (!isOverallTabActive) return
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const summaryRecords = await adminGetSummary()
+        if (!cancelled) setAdminSummary(toArray(summaryRecords))
+      } catch (error) {
+        console.error('Failed to load admin summary:', error)
+      }
+    })()
+    
+    return () => { cancelled = true }
+  }, [isAuthenticated, isAdmin, activePage, dashboardAdminTab, adminRecordsTab])
+
   /* ============================================================
      HANDLERS — Authentication
      ============================================================ */
@@ -273,6 +327,7 @@ function App() {
         const situpRecords = await adminGetSitupRecords().catch(() => [])
         const pushupRecords = await adminGetPushupRecords().catch(() => [])
         const sprintRecords = await adminGetSprintRecords().catch(() => [])
+        const summaryRecords = await adminGetSummary().catch(() => [])
         setUserName(adminInfo?.username || adminInfo?.user_name || adminInfo?.email || email)
         const normalizedProfiles = Array.isArray(officerProfiles) ? officerProfiles.map(normalizeUserRecord) : []
         setAccounts(normalizedProfiles)
@@ -282,6 +337,7 @@ function App() {
         setAdminSitupRecords(toArray(situpRecords))
         setAdminPushupRecords(toArray(pushupRecords))
         setAdminSprintRecords(toArray(sprintRecords))
+        setAdminSummary(toArray(summaryRecords))
       } else {
         const profile = await officerGetProfile().catch(() => null)
         const info = await getOfficerInfo().catch(() => null)
@@ -320,9 +376,9 @@ function App() {
       setOfficerProfileLoading(true)
       await officerCreateProfile(profileData)
       await refreshProfilePage()
-      window.alert('Profile created successfully!')
+      toast.success('Profile created successfully!')
     } catch (error) {
-      window.alert('Failed to create profile: ' + (error?.message || 'Unknown error'))
+      toast.error('Failed to create profile: ' + (error?.message || 'Unknown error'))
     } finally {
       setOfficerProfileLoading(false)
     }
@@ -344,7 +400,7 @@ function App() {
       await refreshProfilePage()
       return
     }
-    
+
     if (isAdmin) {
       try {
         const adminInfo = await adminGetInfo().catch(() => null)
@@ -354,7 +410,8 @@ function App() {
         const situpRecords = await adminGetSitupRecords().catch(() => [])
         const pushupRecords = await adminGetPushupRecords().catch(() => [])
         const sprintRecords = await adminGetSprintRecords().catch(() => [])
-        
+        const summaryRecords = await adminGetSummary().catch(() => [])
+
         if (adminInfo) setUserName(adminInfo?.username || adminInfo?.user_name || adminInfo?.email || userName)
         const normalizedProfiles = Array.isArray(officerProfiles) ? officerProfiles.map(normalizeUserRecord) : []
         setAccounts(normalizedProfiles)
@@ -364,6 +421,7 @@ function App() {
         setAdminSitupRecords(toArray(situpRecords))
         setAdminPushupRecords(toArray(pushupRecords))
         setAdminSprintRecords(toArray(sprintRecords))
+        setAdminSummary(toArray(summaryRecords))
       } catch (error) {
         console.error('Refresh error:', error)
       }
@@ -376,7 +434,7 @@ function App() {
           officerGetSitupRecords().catch(() => []), officerGetPushupRecords().catch(() => []),
           officerGetSprintRecords().catch(() => []),
         ])
-        
+
         if (info) setOfficerInfo(info)
         if (profile) {
           const display = `${profile?.first_name || ''} ${profile?.last_name || ''}`.trim() || userName
@@ -512,23 +570,150 @@ function App() {
   }
 
   /* ============================================================
-     HANDLERS — Admin CRUD
+     HANDLERS — Admin CRUD & Officer Other Actions
      ============================================================ */
 
+  const handleAddOtherBmi = async () => {
+    const profileId = parseInt(addOtherBmiForm.officer_profile_id, 10)
+    const height = parseFloat(addOtherBmiForm.height_meter)
+    const weight = parseFloat(addOtherBmiForm.weight_kg)
+    const monthTaken = normalizeDate(addOtherBmiForm.month_taken) || normalizeDate(new Date().toISOString())
+
+    if (!profileId || Number.isNaN(profileId)) { toast.warning('Please enter a valid Officer Profile ID.'); return }
+    if (!height || Number.isNaN(height)) { toast.warning('Please enter a valid height in meters.'); return }
+    if (!weight || Number.isNaN(weight)) { toast.warning('Please enter a valid weight in kg.'); return }
+
+    try {
+      await officerCreateOtherBmi({ officer_profile_id: profileId, height_meter: height, weight_kg: weight, month_taken: monthTaken })
+      toast.success('Other BMI record created successfully.')
+      setIsAddOtherBmiModalOpen(false)
+      setAddOtherBmiForm({ officer_profile_id: '', height_meter: '', weight_kg: '', month_taken: '' })
+
+      if (isAdmin) {
+        const fresh = await adminGetOfficerBmi().catch(() => null)
+        if (fresh) setAdminBmiRecords(toArray(fresh))
+      }
+    } catch (error) { toast.error('Failed to create other BMI record: ' + (error?.message || 'Unknown error')) }
+  }
+
+  const handleAddOtherSprint = async () => {
+    const officerId = parseInt(addOtherSprintForm.officer_id, 10)
+    const minutes = parseInt(addOtherSprintForm.minutes, 10) || 0
+    const seconds = parseInt(addOtherSprintForm.seconds, 10) || 0
+    const age = parseInt(addOtherSprintForm.age, 10)
+    const gender = addOtherSprintForm.gender
+    const testDate = normalizeDate(addOtherSprintForm.test_date) || normalizeDate(new Date().toISOString())
+
+    if (!officerId || Number.isNaN(officerId)) { toast.warning('Please enter a valid Officer ID.'); return }
+    if (!age || Number.isNaN(age)) { toast.warning('Please enter a valid age.'); return }
+    if (!gender) { toast.warning('Please select a gender.'); return }
+
+    try {
+      await officerCreateOtherSprint({ officer_id: officerId, minutes, seconds, age, gender, test_date: testDate })
+      toast.success('Other Sprint record created successfully.')
+      setIsAddOtherSprintModalOpen(false)
+      setAddOtherSprintForm({ officer_id: '', minutes: '', seconds: '0', age: '', gender: 'male', test_date: '' })
+
+      if (isAdmin) {
+        const fresh = await adminGetSprintRecords().catch(() => null)
+        if (fresh) setAdminSprintRecords(toArray(fresh))
+      }
+    } catch (error) { toast.error('Failed to create other Sprint record: ' + (error?.message || 'Unknown error')) }
+  }
+
+  const handleAddOtherPushup = async () => {
+    const officerId = parseInt(addOtherPushupForm.officer_id, 10)
+    const reps = parseInt(addOtherPushupForm.reps, 10)
+    const age = parseInt(addOtherPushupForm.age, 10)
+    const gender = addOtherPushupForm.gender
+    const testDate = normalizeDate(addOtherPushupForm.test_date) || normalizeDate(new Date().toISOString())
+
+    if (!officerId || Number.isNaN(officerId)) { toast.warning('Please enter a valid Officer ID.'); return }
+    if (!reps || Number.isNaN(reps)) { toast.warning('Please enter valid reps.'); return }
+    if (!age || Number.isNaN(age)) { toast.warning('Please enter a valid age.'); return }
+    if (!gender) { toast.warning('Please select a gender.'); return }
+
+    try {
+      await officerCreateOtherPushup({ officer_id: officerId, reps, age, gender, test_date: testDate })
+      toast.success('Other Push-up record created successfully.')
+      setIsAddOtherPushupModalOpen(false)
+      setAddOtherPushupForm({ officer_id: '', reps: '', age: '', gender: 'male', test_date: '' })
+
+      if (isAdmin) {
+        const fresh = await adminGetPushupRecords().catch(() => null)
+        if (fresh) setAdminPushupRecords(toArray(fresh))
+      }
+    } catch (error) { toast.error('Failed to create other Push-up record: ' + (error?.message || 'Unknown error')) }
+  }
+
+  const handleAddOtherSitup = async () => {
+    const officerId = parseInt(addOtherSitupForm.officer_id, 10)
+    const reps = parseInt(addOtherSitupForm.reps, 10)
+    const age = parseInt(addOtherSitupForm.age, 10)
+    const gender = addOtherSitupForm.gender
+    const testDate = normalizeDate(addOtherSitupForm.test_date) || normalizeDate(new Date().toISOString())
+
+    if (!officerId || Number.isNaN(officerId)) { toast.warning('Please enter a valid Officer ID.'); return }
+    if (!reps || Number.isNaN(reps)) { toast.warning('Please enter valid reps.'); return }
+    if (!age || Number.isNaN(age)) { toast.warning('Please enter a valid age.'); return }
+    if (!gender) { toast.warning('Please select a gender.'); return }
+
+    try {
+      await officerCreateOtherSitup({ officer_id: officerId, reps, age, gender, test_date: testDate })
+      toast.success('Other Sit-up record created successfully.')
+      setIsAddOtherSitupModalOpen(false)
+      setAddOtherSitupForm({ officer_id: '', reps: '', age: '', gender: 'male', test_date: '' })
+
+      if (isAdmin) {
+        const fresh = await adminGetSitupRecords().catch(() => null)
+        if (fresh) setAdminSitupRecords(toArray(fresh))
+      }
+    } catch (error) { toast.error('Failed to create other Sit-up record: ' + (error?.message || 'Unknown error')) }
+  }
+
+  const handleAddOtherWalkTest = async () => {
+    const officerId = parseInt(addOtherWalkTestForm.officer_id, 10)
+    const minutes = parseInt(addOtherWalkTestForm.minutes, 10) || 0
+    const seconds = parseInt(addOtherWalkTestForm.seconds, 10) || 0
+    const age = parseInt(addOtherWalkTestForm.age, 10)
+    const gender = addOtherWalkTestForm.gender
+    const testDate = normalizeDate(addOtherWalkTestForm.test_date) || normalizeDate(new Date().toISOString())
+
+    if (!officerId || Number.isNaN(officerId)) { toast.warning('Please enter a valid Officer ID.'); return }
+    if (!age || Number.isNaN(age)) { toast.warning('Please enter a valid age.'); return }
+    if (!gender) { toast.warning('Please select a gender.'); return }
+
+    try {
+      await officerCreateOtherWalkTest({ officer_id: officerId, minutes, seconds, age, gender, test_date: testDate })
+      toast.success('Other Walk Test record created successfully.')
+      setIsAddOtherWalkTestModalOpen(false)
+      setAddOtherWalkTestForm({ officer_id: '', minutes: '', seconds: '0', age: '', gender: 'male', test_date: '' })
+
+      if (isAdmin) {
+        const fresh = await adminGetWalkTests().catch(() => null)
+        if (fresh) setAdminWalkTests(toArray(fresh))
+      }
+    } catch (error) { toast.error('Failed to create other Walk Test record: ' + (error?.message || 'Unknown error')) }
+  }
+
   const handleDeleteWalkTest = async (testId) => {
-    if (window.confirm('Delete Walk Test record?')) {
-      try { await adminDeleteWalkTest(testId); setAdminWalkTests((prev) => prev.filter((t) => t.id !== testId)) }
-      catch { window.alert('Failed to delete walk test. Please try again.') }
+    const confirmed = await confirm({ title: 'Delete Walk Test', message: 'Are you sure you want to delete this walk test record?', variant: 'danger', confirmText: 'Delete' })
+    if (confirmed) {
+      try { await adminDeleteWalkTest(testId); setAdminWalkTests((prev) => prev.filter((t) => t.id !== testId)); toast.success('Walk test deleted.') }
+      catch { toast.error('Failed to delete walk test. Please try again.') }
     }
   }
 
   const handleDeleteBmi = async (id) => {
-    if (!id || !window.confirm('Delete this BMI record?')) return
+    if (!id) return
+    const confirmed = await confirm({ title: 'Delete BMI Record', message: 'Are you sure you want to delete this BMI record?', variant: 'danger', confirmText: 'Delete' })
+    if (!confirmed) return
     try {
       await adminDeleteOfficerBmi(id)
       const fresh = await adminGetOfficerBmi().catch(() => null)
       if (fresh) setAdminBmiRecords(toArray(fresh)); else setAdminBmiRecords((prev) => prev.filter((r) => r.id !== id))
-    } catch (error) { window.alert('Failed to delete BMI record: ' + (error?.message || 'Unknown error')) }
+      toast.success('BMI record deleted.')
+    } catch (error) { toast.error('Failed to delete BMI record: ' + (error?.message || 'Unknown error')) }
   }
 
   const openBmiModal = (record) => {
@@ -560,17 +745,20 @@ function App() {
         }))
       }
       setIsBmiModalOpen(false); setEditingBmi(null)
-      window.alert('BMI record updated successfully.')
-    } catch (error) { window.alert('Failed to update BMI record: ' + (error?.message || 'Unknown error')) }
+      toast.success('BMI record updated successfully.')
+    } catch (error) { toast.error('Failed to update BMI record: ' + (error?.message || 'Unknown error')) }
   }
 
   const handleDeleteSitup = async (id) => {
-    if (!id || !window.confirm('Delete this 1 Min Sit-up record?')) return
+    if (!id) return
+    const confirmed = await confirm({ title: 'Delete Sit-up Record', message: 'Are you sure you want to delete this sit-up record?', variant: 'danger', confirmText: 'Delete' })
+    if (!confirmed) return
     try {
       await adminDeleteSitupRecord(id)
       const fresh = await adminGetSitupRecords().catch(() => null)
       if (fresh) setAdminSitupRecords(toArray(fresh)); else setAdminSitupRecords((prev) => prev.filter((r) => r.id !== id))
-    } catch (error) { window.alert('Failed to delete sit-up record: ' + (error?.message || 'Unknown error')) }
+      toast.success('Sit-up record deleted.')
+    } catch (error) { toast.error('Failed to delete sit-up record: ' + (error?.message || 'Unknown error')) }
   }
 
   const openSitupModal = (record) => {
@@ -604,17 +792,20 @@ function App() {
 
       setIsSitupModalOpen(false)
       setEditingSitup(null)
-      window.alert('Sit-up record updated successfully.')
-    } catch (error) { window.alert('Failed to update sit-up record: ' + (error?.message || 'Unknown error')) }
+      toast.success('Sit-up record updated successfully.')
+    } catch (error) { toast.error('Failed to update sit-up record: ' + (error?.message || 'Unknown error')) }
   }
 
   const handleDeletePushup = async (id) => {
-    if (!id || !window.confirm('Delete this Push-up record?')) return
+    if (!id) return
+    const confirmed = await confirm({ title: 'Delete Push-up Record', message: 'Are you sure you want to delete this push-up record?', variant: 'danger', confirmText: 'Delete' })
+    if (!confirmed) return
     try {
       await adminDeletePushupRecord(id)
       const fresh = await adminGetPushupRecords().catch(() => null)
       if (fresh) setAdminPushupRecords(toArray(fresh)); else setAdminPushupRecords((prev) => prev.filter((r) => r.id !== id))
-    } catch (error) { window.alert('Failed to delete push-up record: ' + (error?.message || 'Unknown error')) }
+      toast.success('Push-up record deleted.')
+    } catch (error) { toast.error('Failed to delete push-up record: ' + (error?.message || 'Unknown error')) }
   }
 
   const openPushupModal = (record) => {
@@ -646,17 +837,18 @@ function App() {
 
       setIsPushupModalOpen(false)
       setEditingPushup(null)
-      window.alert('Push-up record updated successfully.')
-    } catch (error) { window.alert('Failed to update push-up record: ' + (error?.message || 'Unknown error')) }
+      toast.success('Push-up record updated successfully.')
+    } catch (error) { toast.error('Failed to update push-up record: ' + (error?.message || 'Unknown error')) }
   }
 
   const handleDeleteSprint = async (id) => {
-    if (!id || !window.confirm('Delete this Sprint record?')) return
+    const confirmed = await confirm({ title: 'Delete Sprint Record', message: 'Are you sure you want to delete this sprint record?', variant: 'danger', confirmText: 'Delete' })
+    if (!confirmed) return
     try {
       await adminDeleteSprintRecord(id)
       const fresh = await adminGetSprintRecords().catch(() => null)
       if (fresh) setAdminSprintRecords(toArray(fresh)); else setAdminSprintRecords((prev) => prev.filter((r) => r.id !== id))
-    } catch (error) { window.alert('Failed to delete sprint record: ' + (error?.message || 'Unknown error')) }
+    } catch (error) { toast.error('Failed to delete sprint record: ' + (error?.message || 'Unknown error')) }
   }
 
   const openSprintModal = (record) => {
@@ -689,8 +881,8 @@ function App() {
 
       setIsSprintModalOpen(false)
       setEditingSprint(null)
-      window.alert('Sprint record updated successfully.')
-    } catch (error) { window.alert('Failed to update sprint record: ' + (error?.message || 'Unknown error')) }
+      toast.success('Sprint record updated successfully.')
+    } catch (error) { toast.error('Failed to update sprint record: ' + (error?.message || 'Unknown error')) }
   }
 
   const openWalkTestModal = (test) => {
@@ -708,13 +900,14 @@ function App() {
       await adminUpdateWalkTest(editingWalkTest.id, { age, gender: String(walkTestEditForm.gender || '').toLowerCase(), minutes, seconds, test_date: normalizeDate(walkTestEditForm.test_date) })
       setAdminWalkTests(await adminGetWalkTests())
       setEditingWalkTest(null); setIsWalkTestModalOpen(false)
-    } catch (error) { console.error("Backend Error:", error); window.alert('Failed to update walk test: ' + error.message) }
+    } catch (error) { console.error("Backend Error:", error); toast.error('Failed to update walk test: ' + error.message) }
   }
 
   const handleDeleteUser = async (id) => {
-    if (window.confirm(`Delete user ${id}?`)) {
-      try { await deleteUser(id); setUsers((prev) => prev.filter((u) => u.id !== id)) }
-      catch { window.alert('Failed to delete user. Please try again.') }
+    const confirmed = await confirm({ title: 'Delete User', message: `Are you sure you want to delete user ${id}?`, variant: 'danger', confirmText: 'Delete' })
+    if (confirmed) {
+      try { await deleteUser(id); setUsers((prev) => prev.filter((u) => u.id !== id)); toast.success('User deleted successfully.') }
+      catch { toast.error('Failed to delete user. Please try again.') }
     }
   }
 
@@ -724,22 +917,22 @@ function App() {
 
   const handleRegisterUser = async () => {
     const name = [addForm.firstName.trim(), addForm.lastName.trim()].filter(Boolean).join(' ')
-    if (!name || !addForm.gender || !addForm.age) { window.alert('Please fill in required fields: First Name, Last Name, Gender, Age.'); return }
+    if (!name || !addForm.gender || !addForm.age) { toast.warning('Please fill in required fields: First Name, Last Name, Gender, Age.'); return }
     try {
       const newUser = await createUser({ name, policeGoNoGo: addForm.policeGoNoGo || 'GO', gender: addForm.gender, age: parseInt(addForm.age, 10) || 0, location: addForm.location || '', status: addForm.status || 'Active', date: new Date().toISOString().slice(0, 10) })
       setUsers((prev) => [...prev, newUser]); setAddForm(EMPTY_ADD_FORM); setIsModalOpen(false)
-    } catch { window.alert('Failed to register user. Please try again.') }
+    } catch { toast.error('Failed to register user. Please try again.') }
   }
 
   const handleSaveEditUser = async () => {
     if (!editingUser) return
     const name = [addForm.firstName.trim(), addForm.lastName.trim()].filter(Boolean).join(' ')
-    if (!name || !addForm.gender || !addForm.age) { window.alert('Please fill in required fields: First Name, Last Name, Gender, Age.'); return }
+    if (!name || !addForm.gender || !addForm.age) { toast.warning('Please fill in required fields: First Name, Last Name, Gender, Age.'); return }
     try {
       const updatedUser = await updateUser(editingUser.id, { name, policeGoNoGo: addForm.policeGoNoGo || editingUser.policeGoNoGo, gender: addForm.gender, age: parseInt(addForm.age, 10) || editingUser.age, location: addForm.location ?? editingUser.location, status: addForm.status ?? editingUser.status })
       setUsers((prev) => prev.map((u) => u.id === editingUser.id ? updatedUser : u))
       setEditingUser(null); setIsModalOpen(false); setAddForm(EMPTY_ADD_FORM)
-    } catch { window.alert('Failed to update user. Please try again.') }
+    } catch { toast.error('Failed to update user. Please try again.') }
   }
 
   const openEditModal = (user) => {
@@ -758,14 +951,99 @@ function App() {
     const min = ageMin ? parseInt(ageMin, 10) : 0, max = ageMax ? parseInt(ageMax, 10) : 999, searchLower = search.toLowerCase()
     return users.filter((u) => {
       const matchSearch = !searchLower || getUserDisplayName(u).toLowerCase().includes(searchLower) || (u.policeGoNoGo && u.policeGoNoGo.toLowerCase().includes(searchLower)) || String(u.id ?? '').toLowerCase().includes(searchLower)
-      return matchSearch && (!gender || u.gender === gender) && (u.age >= min && u.age <= max) && (!goNoGo || (u.policeGoNoGo && u.policeGoNoGo.toUpperCase() === goNoGo))
     })
   }, [users, search, gender, ageMin, ageMax, goNoGo])
+
+  /* ── Overall Score Combined Rows ── */
+  const overallScores = useMemo(() => {
+    const qLower = search.trim().toLowerCase()
+    
+    // Check if adminSummary is populated
+    if (adminSummary && adminSummary.length > 0) {
+      return adminSummary.filter(u => {
+         const name = getOfficerName(u.officer_id || u.id);
+         const idStr = String(u.officer_id || u.id).toLowerCase();
+         return !qLower || name.toLowerCase().includes(qLower) || idStr.includes(qLower);
+      }).map(u => ({
+         ...u,
+         name: u.officer_name || getOfficerName(u.officer_id || u.id),
+         tests: {
+           walk: { grade: u.walk_score != null ? `${parseFloat(u.walk_score).toFixed(2)}%` : '—' },
+           situp: { grade: u.situp_score != null ? `${parseFloat(u.situp_score).toFixed(2)}%` : '—' },
+           pushup: { grade: u.pushup_score != null ? `${parseFloat(u.pushup_score).toFixed(2)}%` : '—' },
+           sprint: { grade: u.sprint_score != null ? `${parseFloat(u.sprint_score).toFixed(2)}%` : '—' }
+         },
+         testCount: (Number(u.walk_tests) > 0 ? 1 : 0) + (Number(u.situp_tests) > 0 ? 1 : 0) + (Number(u.pushup_tests) > 0 ? 1 : 0) + (Number(u.sprint_tests) > 0 ? 1 : 0),
+         overallStatus: (() => {
+           const st = String(u.status || u.overall_status || u.overallStatus || '').toLowerCase();
+           if (st.includes('fail')) return 'Failed';
+           if (st.includes('pass')) return 'Passed';
+           return u.is_passed || u.isPassed ? 'Passed' : 'Failed';
+         })(),
+         baseUser: users.find(x => idsMatch(x.id, u.officer_id || u.id)) || {}
+      }));
+    }
+
+    // Fallback if adminSummary is not available
+    const map = new Map()
+
+    const addTest = (record, type) => {
+      const gId = record.officer_profile_id || record.officer_id || record.account_id || record.user_id;
+      if (!gId) return;
+      if (!map.has(gId)) {
+        map.set(gId, { id: gId, name: getOfficerName(gId), tests: {} });
+      }
+      const data = map.get(gId);
+      data.tests[type] = record;
+    };
+
+    if (adminWalkTests) adminWalkTests.forEach(r => addTest(r, 'walk'))
+    if (adminBmiRecords) adminBmiRecords.forEach(r => addTest(r, 'bmi'))
+    if (adminSitupRecords) adminSitupRecords.forEach(r => addTest(r, 'situp'))
+    if (adminPushupRecords) adminPushupRecords.forEach(r => addTest(r, 'pushup'))
+    if (adminSprintRecords) adminSprintRecords.forEach(r => addTest(r, 'sprint'))
+
+    users.forEach(u => {
+      if (u.id && !map.has(u.id)) {
+        map.set(u.id, { id: u.id, name: getUserDisplayName(u) || 'Unknown', tests: {}, baseUser: u })
+      } else if (u.id) {
+        map.get(u.id).baseUser = u
+      }
+    })
+
+    return Array.from(map.values())
+      .filter(u => !qLower || u.name.toLowerCase().includes(qLower))
+      .map(u => {
+        let hasFailed = false;
+        let testCount = 0;
+
+        ['walk', 'bmi', 'situp', 'pushup', 'sprint'].forEach(t => {
+          if (u.tests[t]) testCount++;
+        })
+
+        if (u.baseUser?.policeGoNoGo === 'NO GO') hasFailed = true;
+
+        ['walk', 'situp', 'pushup', 'sprint'].forEach(t => {
+          if (u.tests[t] && u.tests[t].grade) {
+            const g = String(u.tests[t].grade).toLowerCase();
+            if (g.includes('fail') || g.includes('poor')) hasFailed = true;
+          }
+        });
+
+        if (u.tests['bmi'] && u.tests['bmi'].category) {
+          const cat = String(u.tests['bmi'].category).toLowerCase();
+          if (cat.includes('obese')) hasFailed = true;
+        }
+
+        const overallStatus = testCount === 0 ? 'No Data' : (hasFailed ? 'Failed' : 'Passed')
+        return { ...u, testCount, overallStatus, hasFailed }
+      })
+  }, [users, adminWalkTests, adminBmiRecords, adminSitupRecords, adminPushupRecords, adminSprintRecords, adminSummary, search, getOfficerName])
 
   const handleResetFilters = () => { setSearch(''); setGender(''); setAgeMin(''); setAgeMax(''); setGoNoGo('') }
 
   const exportCsv = (usersToExport, label) => {
-    if (!usersToExport.length) { window.alert('No users to export for this selection.'); return }
+    if (!usersToExport.length) { toast.warning('No users to export for this selection.'); return }
     const headers = ['ID', 'Name', 'Police GO / NO GO', 'Gender', 'Age', 'Location', 'Status', 'Registered']
     const escapeCell = (value) => `"${String(value ?? '').replace(/"/g, '""')}"`
     const rows = usersToExport.map((u) => [u.id, u.name, u.policeGoNoGo ?? '', u.gender, u.age, u.location ?? '', u.status ?? '', u.date ?? ''])
@@ -787,12 +1065,12 @@ function App() {
         const workbook = XLSX.read(data, { type: 'array' })
         const firstSheet = workbook.Sheets[workbook.SheetNames[0]]
         const rows = XLSX.utils.sheet_to_json(firstSheet, { header: 1, defval: '' })
-        if (!rows.length) { window.alert('Excel file is empty or has no data.'); return }
+        if (!rows.length) { toast.warning('Excel file is empty or has no data.'); return }
         const headers = rows[0].map((h) => String(h ?? '').trim())
         const idIdx = headers.findIndex((h) => /^id$/i.test(h))
         const nameIdx = headers.findIndex((h) => /^name$/i.test(h))
         const goNoGoIdx = headers.findIndex((h) => /go\s*[\/\-]?\s*no\s*go|police\s*go|go\s*no\s*go|status/i.test(h))
-        if (goNoGoIdx < 0) { window.alert('Excel must have a column for GO/NO GO (e.g. "Police GO / NO GO", "GO/NO GO", or "Status").'); return }
+        if (goNoGoIdx < 0) { toast.warning('Excel must have a column for GO/NO GO (e.g. "Police GO / NO GO", "GO/NO GO", or "Status").'); return }
         const nameCol = nameIdx >= 0 ? nameIdx : headers.findIndex((_, i) => i === 1)
         const idCol = idIdx >= 0 ? idIdx : headers.findIndex((_, i) => i === 0)
         setUsers((prev) => {
@@ -810,10 +1088,10 @@ function App() {
             if (existing) { existing.policeGoNoGo = goNoGoVal; updated++ }
             else if (rowName && goNoGoVal) { next.push({ id: `USR-${String(nextNum++).padStart(3, '0')}`, name: rowName, policeGoNoGo: goNoGoVal, gender: 'Male', age: 0, location: '', status: 'Active', date: new Date().toISOString().slice(0, 10) }); added++ }
           }
-          setTimeout(() => window.alert(`Import complete. Updated ${updated} user(s), added ${added} new user(s) with GO/NO GO from Excel.`), 0)
+          setTimeout(() => toast.success(`Import complete. Updated ${updated} user(s), added ${added} new user(s) with GO/NO GO from Excel.`), 0)
           return next
         })
-      } catch (err) { console.error(err); window.alert('Failed to read Excel file. Please use .xlsx or .xls with columns: ID, Name, and a GO/NO GO column.') }
+      } catch (err) { console.error(err); toast.error('Failed to read Excel file. Please use .xlsx or .xls with columns: ID, Name, and a GO/NO GO column.') }
     }
     reader.readAsArrayBuffer(file)
   }
@@ -823,7 +1101,13 @@ function App() {
      ============================================================ */
 
   if (!isAuthenticated) {
-    return <Login onLogin={handleLogin} onCreateAccount={handleCreateAccount} loginError={loginError} setLoginError={setLoginError} />
+    return (
+      <>
+        <Login onLogin={handleLogin} onCreateAccount={handleCreateAccount} loginError={loginError} setLoginError={setLoginError} />
+        <ToastContainer toasts={toasts} onDismiss={dismissToast} />
+        {ConfirmDialogComponent}
+      </>
+    )
   }
 
   /* ── Stat card counts ── */
@@ -840,7 +1124,7 @@ function App() {
       />
 
       <main className="main">
-        <Topbar activePage={activePage} userName={userName} isAdmin={isAdmin} setMobileMenuOpen={setMobileMenuOpen} onRefresh={handleGlobalRefresh} />
+        <Topbar activePage={activePage} userName={userName} isAdmin={isAdmin} setMobileMenuOpen={setMobileMenuOpen} onRefresh={handleGlobalRefresh} setActivePage={setActivePage} />
 
         <div className="content">
           {/* ── Dashboard ── */}
@@ -868,6 +1152,7 @@ function App() {
                 <AdminDashboard
                   users={users} adminWalkTests={adminWalkTests} adminBmiRecords={adminBmiRecords}
                   adminSitupRecords={adminSitupRecords} adminPushupRecords={adminPushupRecords} adminSprintRecords={adminSprintRecords}
+                  adminSummary={adminSummary}
                   dashboardSearch={dashboardSearch} setDashboardSearch={setDashboardSearch}
                   dashboardAdminTab={dashboardAdminTab} setDashboardAdminTab={setDashboardAdminTab}
                   getOfficerName={getOfficerName}
@@ -885,12 +1170,12 @@ function App() {
           )}
 
           {/* ── User Management ── */}
-          {activePage === 'user' && isAdmin && (
+          {activePage === 'user' && (
             <div className="user-root">
               <div className="admin-record-tabs">
-                {['walk', 'bmi', 'situp', 'pushup', 'sprint'].map((tab) => (
+                {['walk', 'bmi', 'situp', 'pushup', 'sprint', 'overall'].map((tab) => (
                   <button key={tab} type="button" className={`admin-record-tab ${adminRecordsTab === tab ? 'active' : ''}`} onClick={() => setAdminRecordsTab(tab)}>
-                    {{ walk: 'Walk Test Records', bmi: 'BMI Test Record', situp: '1 Min Sit-up Records', pushup: 'Push-up Test Record', sprint: '300 Meters Sprint Test Record' }[tab]}
+                    {{ walk: 'Walk Test Records', bmi: 'BMI Test Record', situp: '1 Min Sit-up Records', pushup: 'Push-up Test Record', sprint: '300 Meters Sprint Test Record', overall: 'Overall Exercise Score' }[tab]}
                   </button>
                 ))}
               </div>
@@ -898,6 +1183,7 @@ function App() {
               {adminRecordsTab === 'walk' && (
                 <User users={users} filteredUsers={filteredUsers} setUsers={setUsers} onDeleteUser={handleDeleteUser} onImportExcel={handleImportExcel}
                   onOpenAddModal={() => { setAddForm(EMPTY_ADD_FORM); setEditingUser(null); setIsModalOpen(true) }}
+                  onAddWalkTest={() => setIsAddOtherWalkTestModalOpen(true)}
                   onEditUser={openEditModal} onDeleteWalkTest={handleDeleteWalkTest} onEditWalkTest={openWalkTestModal}
                   search={search} setSearch={setSearch} gender={gender} setGender={setGender}
                   ageMin={ageMin} setAgeMin={setAgeMin} ageMax={ageMax} setAgeMax={setAgeMax}
@@ -911,8 +1197,13 @@ function App() {
                 <div className="user-panel">
                   <div className="user-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h2 className="user-title">BMI Test Record</h2>
-                    <div className="user-filter-group user-search" style={{ margin: 0, minWidth: 250 }}>
-                      <input type="text" value={bmiSearch} onChange={(e) => setBmiSearch(e.target.value)} placeholder="Search officer name..." style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 6 }} />
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                      <button type="button" className="user-btn-add" onClick={() => setIsAddOtherBmiModalOpen(true)}>
+                        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg> Add BMI Record
+                      </button>
+                      <div className="user-filter-group user-search" style={{ margin: 0, minWidth: 250 }}>
+                        <input type="text" value={bmiSearch} onChange={(e) => setBmiSearch(e.target.value)} placeholder="Search officer name or ID..." style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 6 }} />
+                      </div>
                     </div>
                   </div>
                   <table className="user-table">
@@ -946,8 +1237,13 @@ function App() {
                 <div className="user-panel">
                   <div className="user-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h2 className="user-title">1 Min Sit-up Records</h2>
-                    <div className="user-filter-group user-search" style={{ margin: 0, minWidth: 250 }}>
-                      <input type="text" value={situpSearch} onChange={(e) => setSitupSearch(e.target.value)} placeholder="Search officer name..." style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 6 }} />
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                      <button type="button" className="user-btn-add" onClick={() => setIsAddOtherSitupModalOpen(true)}>
+                        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg> Add Sit-up Record
+                      </button>
+                      <div className="user-filter-group user-search" style={{ margin: 0, minWidth: 250 }}>
+                        <input type="text" value={situpSearch} onChange={(e) => setSitupSearch(e.target.value)} placeholder="Search officer name or ID..." style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 6 }} />
+                      </div>
                     </div>
                   </div>
                   <table className="user-table">
@@ -978,8 +1274,13 @@ function App() {
                 <div className="user-panel">
                   <div className="user-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h2 className="user-title">Push-up Test Record</h2>
-                    <div className="user-filter-group user-search" style={{ margin: 0, minWidth: 250 }}>
-                      <input type="text" value={pushupSearch} onChange={(e) => setPushupSearch(e.target.value)} placeholder="Search officer name..." style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 6 }} />
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                      <button type="button" className="user-btn-add" onClick={() => setIsAddOtherPushupModalOpen(true)}>
+                        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg> Add Push-up Record
+                      </button>
+                      <div className="user-filter-group user-search" style={{ margin: 0, minWidth: 250 }}>
+                        <input type="text" value={pushupSearch} onChange={(e) => setPushupSearch(e.target.value)} placeholder="Search officer name or ID..." style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 6 }} />
+                      </div>
                     </div>
                   </div>
                   <table className="user-table">
@@ -1006,12 +1307,87 @@ function App() {
                 </div>
               )}
 
+              {adminRecordsTab === 'overall' && (
+                <div className="user-panel">
+                  <div className="user-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h2 className="user-title">Overall Exercise Score</h2>
+                    <div className="user-filter-group user-search" style={{ margin: 0, minWidth: 250 }}>
+                      <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search officer name or ID..." style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 6 }} />
+                    </div>
+                  </div>
+                  <table className="user-table">
+                    <thead>
+                      <tr>
+                        <th>Officer</th>
+                        <th>Walk Test Grade</th>
+                        <th>Sit-up Grade</th>
+                        <th>Push-up Grade</th>
+                        <th>300m Sprint Grade</th>
+                        <th>Tests Completed</th>
+                        <th>Overall Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {overallScores.map((r, i) => (
+                        <tr key={`user-dash-overall-${r.id ?? i}`}>
+                          <td>{r.name}</td>
+                          <td>{r.tests.walk?.grade || '—'}</td>
+                          <td>{r.tests.situp?.grade || '—'}</td>
+                          <td>{r.tests.pushup?.grade || '—'}</td>
+                          <td>{r.tests.sprint?.grade || '—'}</td>
+                          <td>{r.testCount} / 5</td>
+                          <td>
+                            <select
+                              value={r.overallStatus === 'Failed' ? 'Failed' : 'Passed'}
+                              onChange={async (e) => {
+                                const newStatus = e.target.value === 'Failed' ? 'NO GO' : 'GO';
+                                try {
+                                  if (r.baseUser && r.baseUser.id) {
+                                    await updateUser(r.baseUser.id, { ...r.baseUser, policeGoNoGo: newStatus });
+                                    setUsers(prev => prev.map(u => u.id === r.baseUser.id ? { ...u, policeGoNoGo: newStatus } : u));
+                                  } else {
+                                    toast.warning('User account not fully registered yet.');
+                                  }
+                                } catch (error) {
+                                  console.error(error);
+                                  toast.error('Failed to update status.');
+                                }
+                              }}
+                              style={{
+                                padding: '4px 10px',
+                                borderRadius: '12px',
+                                fontWeight: 600,
+                                fontSize: 13,
+                                color: r.overallStatus === 'Failed' ? '#991b1b' : '#065f46',
+                                backgroundColor: r.overallStatus === 'Failed' ? '#fee2e2' : '#d1fae5',
+                                border: '1px solid transparent',
+                                outline: 'none',
+                                cursor: 'pointer'
+                              }}
+                            >
+                              <option value="Passed">Passed</option>
+                              <option value="Failed">Failed</option>
+                            </select>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  {overallScores.length === 0 && <p className="dashboard-empty">No records match your search.</p>}
+                </div>
+              )}
+
               {adminRecordsTab === 'sprint' && (
                 <div className="user-panel">
                   <div className="user-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h2 className="user-title">300 Meters Sprint Test Record</h2>
-                    <div className="user-filter-group user-search" style={{ margin: 0, minWidth: 250 }}>
-                      <input type="text" value={sprintSearch} onChange={(e) => setSprintSearch(e.target.value)} placeholder="Search officer name..." style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 6 }} />
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                      <button type="button" className="user-btn-add" onClick={() => setIsAddOtherSprintModalOpen(true)}>
+                        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg> Add Sprint Record
+                      </button>
+                      <div className="user-filter-group user-search" style={{ margin: 0, minWidth: 250 }}>
+                        <input type="text" value={sprintSearch} onChange={(e) => setSprintSearch(e.target.value)} placeholder="Search officer name or ID..." style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 6 }} />
+                      </div>
                     </div>
                   </div>
                   <table className="user-table">
@@ -1068,7 +1444,21 @@ function App() {
         isSprintModalOpen={isSprintModalOpen} editingSprint={editingSprint}
         setIsSprintModalOpen={setIsSprintModalOpen} setEditingSprint={setEditingSprint}
         sprintEditForm={sprintEditForm} setSprintEditForm={setSprintEditForm} handleSaveSprint={handleSaveSprint}
+        isAddOtherBmiModalOpen={isAddOtherBmiModalOpen} setIsAddOtherBmiModalOpen={setIsAddOtherBmiModalOpen}
+        addOtherBmiForm={addOtherBmiForm} setAddOtherBmiForm={setAddOtherBmiForm} handleAddOtherBmi={handleAddOtherBmi}
+        isAddOtherSprintModalOpen={isAddOtherSprintModalOpen} setIsAddOtherSprintModalOpen={setIsAddOtherSprintModalOpen}
+        addOtherSprintForm={addOtherSprintForm} setAddOtherSprintForm={setAddOtherSprintForm} handleAddOtherSprint={handleAddOtherSprint}
+        isAddOtherPushupModalOpen={isAddOtherPushupModalOpen} setIsAddOtherPushupModalOpen={setIsAddOtherPushupModalOpen}
+        addOtherPushupForm={addOtherPushupForm} setAddOtherPushupForm={setAddOtherPushupForm} handleAddOtherPushup={handleAddOtherPushup}
+        isAddOtherSitupModalOpen={isAddOtherSitupModalOpen} setIsAddOtherSitupModalOpen={setIsAddOtherSitupModalOpen}
+        addOtherSitupForm={addOtherSitupForm} setAddOtherSitupForm={setAddOtherSitupForm} handleAddOtherSitup={handleAddOtherSitup}
+        isAddOtherWalkTestModalOpen={isAddOtherWalkTestModalOpen} setIsAddOtherWalkTestModalOpen={setIsAddOtherWalkTestModalOpen}
+        addOtherWalkTestForm={addOtherWalkTestForm} setAddOtherWalkTestForm={setAddOtherWalkTestForm} handleAddOtherWalkTest={handleAddOtherWalkTest}
       />
+
+      {/* ── Toast Notifications & Confirm Dialog ── */}
+      <ToastContainer toasts={toasts} onDismiss={dismissToast} />
+      {ConfirmDialogComponent}
     </>
   )
 }

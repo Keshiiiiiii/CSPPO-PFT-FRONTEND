@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import './CSS/user.css'
 import { getUserDisplayName, normalizeId, idsMatch } from './utils.js'
+import GradeBadge from './GradeBadge.jsx'
 
 function User({
   users,
@@ -10,6 +11,7 @@ function User({
   onImportExcel,
   onOpenAddModal,
   onEditUser,
+  onAddWalkTest,
   onEditWalkTest,
   onDeleteWalkTest,
   search,
@@ -39,7 +41,8 @@ function User({
     if (file) {
       const ext = (file.name || '').toLowerCase()
       if (!ext.endsWith('.xlsx') && !ext.endsWith('.xls')) {
-        window.alert('Please select an Excel file (.xlsx or .xls).')
+        // Will show as console warning; parent handles toast
+        console.warn('Please select an Excel file (.xlsx or .xls).')
         e.target.value = ''
         return
       }
@@ -110,6 +113,11 @@ function User({
                 📄 Import Excel (GO/NO GO)
               </button>
             )}
+            {onAddWalkTest && (
+              <button type="button" className="user-btn-add" onClick={onAddWalkTest}>
+                <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg> Add Walk Test Record
+              </button>
+            )}
           </div>
         </div>
 
@@ -120,7 +128,7 @@ function User({
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Type name to search..."
+              placeholder="Type name or ID to search..."
             />
           </div>
 
@@ -234,7 +242,7 @@ function User({
                     <td>{test.age || u.age}</td>
                     {hasLocationColumn && <td>{u.location ?? '—'}</td>}
                     <td>{test.time_formatted || `${test.minutes}:${String(test.seconds).padStart(2, '0')}`}</td>
-                    <td>{test.grade}</td>
+                    <td><GradeBadge grade={test.grade} /></td>
                     <td>{test.test_date ? new Date(test.test_date).toLocaleDateString() : '—'}</td>
                     {(onEditWalkTest || onDeleteWalkTest) && (
                       <td>
@@ -266,7 +274,7 @@ function User({
                     <td>{test.age}</td>
                     {hasLocationColumn && <td>—</td>}
                     <td>{test.time_formatted || `${test.minutes}:${String(test.seconds).padStart(2, '0')}`}</td>
-                    <td>{test.grade}</td>
+                    <td><GradeBadge grade={test.grade} /></td>
                     <td>{test.test_date ? new Date(test.test_date).toLocaleDateString() : '—'}</td>
                     {(onEditWalkTest || onDeleteWalkTest) && (
                       <td>

@@ -1,5 +1,6 @@
 import { createPortal } from 'react-dom'
 import '../CSS/ExerciseModal.css'
+import EmptyState from '../EmptyState.jsx'
 
 /* ── Shared SVG Icons ── */
 const PlusIcon = () => (<svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>)
@@ -110,10 +111,7 @@ function ExerciseSection({
         </tbody>
       </table>
       {records.length === 0 && (
-        <div className="exercise-empty">
-          <EmptyDocIcon />
-          <p>No {title.toLowerCase()} yet</p>
-        </div>
+        <EmptyState type="exercise" title={`No ${title}`} description={`No ${title.toLowerCase()} have been recorded yet. Click "Add Record" to get started.`} />
       )}
     </div>
   )

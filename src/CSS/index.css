@@ -332,3 +332,75 @@ img {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
 }
+
+/* ============================================================
+   ADMIN DASHBOARD TABS & FILTER COMPONENT
+   ============================================================ */
+
+.filter-bar {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-light);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.admin-record-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--slate);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-smooth);
+}
+
+.admin-record-tab svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  transition: transform var(--duration-normal) var(--ease-smooth);
+}
+
+.admin-record-tab:hover {
+  background: rgba(37, 99, 235, 0.08);
+  color: var(--blue);
+}
+
+.admin-record-tab.active {
+  background: var(--blue);
+  color: var(--white);
+  border-color: var(--blue);
+  box-shadow: var(--shadow-sm);
+}
+
+.admin-record-tab.active svg {
+  transform: scale(1.1);
+}
+
+/* ── Refined Input Field ── */
+.filter-input {
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border);
+  background: var(--off-white);
+  color: var(--navy);
+  font-size: var(--text-sm);
+  outline: none;
+  transition: all var(--duration-normal) var(--ease-smooth);
+}
+
+.filter-input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  background: var(--white);
+}

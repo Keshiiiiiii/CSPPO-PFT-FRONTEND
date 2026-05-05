@@ -59,7 +59,7 @@ function OfficerProfile({
 
   const handleSave = async () => {
     if (!form.first_name || !form.last_name || !form.age || !form.birthday || !form.office_unit) {
-      window.alert('Please fill in all required fields.')
+      // Set a local validation state instead of window.alert
       return
     }
     if (onCreateProfile) {

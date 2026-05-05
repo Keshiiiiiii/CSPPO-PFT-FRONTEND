@@ -1,5 +1,6 @@
 import ExerciseSection from './exercises/ExerciseSection.jsx'
 import { getBmiHeight } from './utils.js'
+import GradeBadge from './GradeBadge.jsx'
 
 /* ── Tab Icons ── */
 const TabIconWalk = () => (<svg viewBox="0 0 24 24"><circle cx="14" cy="5" r="2"/><path d="M18 22l-3-3-1.5 3L9 16l-4 4"/><path d="M10 16l2-5 3 1"/></svg>)
@@ -39,7 +40,7 @@ const EXERCISE_CONFIGS = {
       { key: 'age', label: 'Age' },
       { key: 'gender', label: 'Gender' },
       { key: 'time', label: 'Time', render: (r) => r.time_formatted || r.time || `${r.minutes ?? 0}:${String(r.seconds ?? 0).padStart(2, '0')}` },
-      { key: 'grade', label: 'Grade' },
+      { key: 'grade', label: 'Grade', render: (r) => <GradeBadge grade={r.grade} /> },
       { key: 'test_date', label: 'Test Date', render: (r) => r.test_date ? new Date(r.test_date).toLocaleDateString() : '—' },
       { key: 'goNoGo', label: 'GO / NO GO', render: (r) => r.policeGoNoGo ?? r.go_no_go ?? '—' },
     ],
@@ -81,7 +82,7 @@ const EXERCISE_CONFIGS = {
     columns: [
       { key: 'id', label: 'ID' },
       { key: 'count', label: 'Count', render: (r) => r.count ?? r.reps ?? r.situp_count ?? '—' },
-      { key: 'grade', label: 'Grade' },
+      { key: 'grade', label: 'Grade', render: (r) => <GradeBadge grade={r.grade} /> },
       { key: 'test_date', label: 'Test Date', render: (r) => r.test_date ? new Date(r.test_date).toLocaleDateString() : '—' },
     ],
   },
@@ -101,7 +102,7 @@ const EXERCISE_CONFIGS = {
     columns: [
       { key: 'id', label: 'ID' },
       { key: 'count', label: 'Count', render: (r) => r.count ?? r.reps ?? r.pushup_count ?? '—' },
-      { key: 'grade', label: 'Grade' },
+      { key: 'grade', label: 'Grade', render: (r) => <GradeBadge grade={r.grade} /> },
       { key: 'test_date', label: 'Test Date', render: (r) => r.test_date ? new Date(r.test_date).toLocaleDateString() : '—' },
     ],
   },
@@ -121,7 +122,7 @@ const EXERCISE_CONFIGS = {
     columns: [
       { key: 'id', label: 'ID' },
       { key: 'time', label: 'Time', render: (r) => r.time_formatted || `${r.minutes ?? 0}:${String(r.seconds ?? 0).padStart(2, '0')}` },
-      { key: 'grade', label: 'Grade' },
+      { key: 'grade', label: 'Grade', render: (r) => <GradeBadge grade={r.grade} /> },
       { key: 'test_date', label: 'Test Date', render: (r) => r.test_date ? new Date(r.test_date).toLocaleDateString() : '—' },
     ],
   },

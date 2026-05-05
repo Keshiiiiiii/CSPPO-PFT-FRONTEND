@@ -144,6 +144,72 @@ const MODAL_CONFIGS = {
       { name: 'test_date', label: 'Test Date', type: 'date', full: true },
     ],
   },
+  addOtherBmi: {
+    title: 'Add Other Officer BMI',
+    subtitle: 'Create a BMI record for another officer',
+    icon: <ScaleIcon />,
+    saveLabel: 'Create Record',
+    fields: [
+      { name: 'officer_profile_id', label: 'Officer Profile ID', type: 'number', min: 1, placeholder: 'e.g. 11' },
+      { name: 'height_meter', label: 'Height (m)', type: 'number', min: 0, step: 0.01, placeholder: 'e.g. 1.75' },
+      { name: 'weight_kg', label: 'Weight (kg)', type: 'number', min: 0, step: 0.1, placeholder: 'e.g. 70.5' },
+      { name: 'month_taken', label: 'Month Taken', type: 'date', full: true },
+    ],
+  },
+  addOtherSprint: {
+    title: 'Add Other Officer Sprint',
+    subtitle: 'Create a 300m sprint record for another officer',
+    icon: <ZapIcon />,
+    saveLabel: 'Create Record',
+    fields: [
+      { name: 'officer_id', label: 'Officer ID', type: 'number', min: 1, placeholder: 'e.g. 11' },
+      { name: 'minutes', label: 'Minutes', type: 'number', min: 0, placeholder: '0' },
+      { name: 'seconds', label: 'Seconds', type: 'number', min: 0, max: 59, placeholder: '0' },
+      { name: 'age', label: 'Age', type: 'number', min: 0, placeholder: 'Enter age' },
+      { name: 'gender', label: 'Gender', type: 'select', options: GENDER_OPTIONS },
+      { name: 'test_date', label: 'Test Date', type: 'date', full: true },
+    ],
+  },
+  addOtherPushup: {
+    title: 'Add Other Officer Push-up',
+    subtitle: 'Create a push-up record for another officer',
+    icon: <ActivityIcon />,
+    saveLabel: 'Create Record',
+    fields: [
+      { name: 'officer_id', label: 'Officer ID', type: 'number', min: 1, placeholder: 'e.g. 11' },
+      { name: 'reps', label: 'Reps (Count)', type: 'number', min: 0, placeholder: 'e.g. 30' },
+      { name: 'age', label: 'Age', type: 'number', min: 0, placeholder: 'Enter age' },
+      { name: 'gender', label: 'Gender', type: 'select', options: GENDER_OPTIONS },
+      { name: 'test_date', label: 'Test Date', type: 'date', full: true },
+    ],
+  },
+  addOtherSitup: {
+    title: 'Add Other Officer Sit-up',
+    subtitle: 'Create a sit-up record for another officer',
+    icon: <ActivityIcon />,
+    saveLabel: 'Create Record',
+    fields: [
+      { name: 'officer_id', label: 'Officer ID', type: 'number', min: 1, placeholder: 'e.g. 11' },
+      { name: 'reps', label: 'Reps (Count)', type: 'number', min: 0, placeholder: 'e.g. 50' },
+      { name: 'age', label: 'Age', type: 'number', min: 0, placeholder: 'Enter age' },
+      { name: 'gender', label: 'Gender', type: 'select', options: GENDER_OPTIONS },
+      { name: 'test_date', label: 'Test Date', type: 'date', full: true },
+    ],
+  },
+  addOtherWalkTest: {
+    title: 'Add Other Officer Walk Test',
+    subtitle: 'Create a walk test record for another officer',
+    icon: <ActivityIcon />,
+    saveLabel: 'Create Record',
+    fields: [
+      { name: 'officer_id', label: 'Officer ID', type: 'number', min: 1, placeholder: 'e.g. 11' },
+      { name: 'minutes', label: 'Minutes', type: 'number', min: 0, placeholder: 'e.g. 17' },
+      { name: 'seconds', label: 'Seconds', type: 'number', min: 0, max: 59, placeholder: 'e.g. 40' },
+      { name: 'age', label: 'Age', type: 'number', min: 0, placeholder: 'Enter age' },
+      { name: 'gender', label: 'Gender', type: 'select', options: GENDER_OPTIONS },
+      { name: 'test_date', label: 'Test Date', type: 'date', full: true },
+    ],
+  },
 }
 
 /**
@@ -157,6 +223,11 @@ function ExerciseModals(props) {
     { key: 'situp',    isOpen: props.isSitupModalOpen,    record: props.editingSitup,    form: props.situpEditForm,    setForm: props.setSitupEditForm,    onSave: props.handleSaveSitup,    onClose: () => { props.setIsSitupModalOpen(false); props.setEditingSitup(null) } },
     { key: 'pushup',   isOpen: props.isPushupModalOpen,   record: props.editingPushup,   form: props.pushupEditForm,   setForm: props.setPushupEditForm,   onSave: props.handleSavePushup,   onClose: () => { props.setIsPushupModalOpen(false); props.setEditingPushup(null) } },
     { key: 'sprint',   isOpen: props.isSprintModalOpen,   record: props.editingSprint,   form: props.sprintEditForm,   setForm: props.setSprintEditForm,   onSave: props.handleSaveSprint,   onClose: () => { props.setIsSprintModalOpen(false); props.setEditingSprint(null) } },
+    { key: 'addOtherBmi', isOpen: props.isAddOtherBmiModalOpen, record: {}, form: props.addOtherBmiForm, setForm: props.setAddOtherBmiForm, onSave: props.handleAddOtherBmi, onClose: () => { props.setIsAddOtherBmiModalOpen(false) } },
+    { key: 'addOtherSprint', isOpen: props.isAddOtherSprintModalOpen, record: {}, form: props.addOtherSprintForm, setForm: props.setAddOtherSprintForm, onSave: props.handleAddOtherSprint, onClose: () => { props.setIsAddOtherSprintModalOpen(false) } },
+    { key: 'addOtherPushup', isOpen: props.isAddOtherPushupModalOpen, record: {}, form: props.addOtherPushupForm, setForm: props.setAddOtherPushupForm, onSave: props.handleAddOtherPushup, onClose: () => { props.setIsAddOtherPushupModalOpen(false) } },
+    { key: 'addOtherSitup', isOpen: props.isAddOtherSitupModalOpen, record: {}, form: props.addOtherSitupForm, setForm: props.setAddOtherSitupForm, onSave: props.handleAddOtherSitup, onClose: () => { props.setIsAddOtherSitupModalOpen(false) } },
+    { key: 'addOtherWalkTest', isOpen: props.isAddOtherWalkTestModalOpen, record: {}, form: props.addOtherWalkTestForm, setForm: props.setAddOtherWalkTestForm, onSave: props.handleAddOtherWalkTest, onClose: () => { props.setIsAddOtherWalkTestModalOpen(false) } },
   ]
 
   return (
