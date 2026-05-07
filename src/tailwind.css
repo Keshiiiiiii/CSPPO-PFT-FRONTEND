@@ -1,0 +1,89 @@
+/*
+ * Tailwind CSS v3 — Entry Point
+ * This file is loaded ALONGSIDE the existing CSS during migration.
+ * Once all components are migrated, the old CSS files will be removed.
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * ── Custom Base Layer ──
+ * These override Tailwind's Preflight reset where needed
+ * to maintain compatibility during migration.
+ */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-sans antialiased;
+  }
+
+  /* Ensure SVG icons inherit stroke properties */
+  svg {
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .fi {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  .fi::before {
+    line-height: 1;
+  }
+}
+
+/*
+ * ── Custom Component Layer ──
+ * Reusable component classes (use sparingly — prefer utility-first)
+ */
+@layer components {
+  /* Glass card effect */
+  .glass {
+    @apply bg-white/5 border border-white/10 backdrop-blur-glass;
+  }
+
+  /* Focus ring for accessibility */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-light focus:ring-offset-2 focus:ring-offset-navy;
+  }
+}
+
+/*
+ * ── Custom Utilities ──
+ */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Gradient text clipping */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r;
+  }
+
+  /* Stagger animation delays for cascading effects */
+  .stagger-1 { animation-delay: 50ms; }
+  .stagger-2 { animation-delay: 100ms; }
+  .stagger-3 { animation-delay: 150ms; }
+  .stagger-4 { animation-delay: 200ms; }
+  .stagger-5 { animation-delay: 250ms; }
+  .stagger-6 { animation-delay: 300ms; }
+  .stagger-7 { animation-delay: 350ms; }
+  .stagger-8 { animation-delay: 400ms; }
+
+  @keyframes toast-progress {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+  }
+}
